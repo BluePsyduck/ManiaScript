@@ -1,0 +1,11 @@
+/doc
+/report
+/vendor
+/composer.lock
+/composer.phar
+/phpunit.xml
+
+# Eclipse project files
+/.settings
+/.buildpath
+/.project

@@ -1,0 +1,20 @@
+<phpunit colors="true">
+    <testsuites>
+        <testsuite name="ManiaScript">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+            <exclude>
+                <directory suffix=".php">vendor</directory>
+                <directory suffix=".php">tests/Assets</directory>
+                <file>src/autoload.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="./report" />
+    </logging>
+</phpunit>
