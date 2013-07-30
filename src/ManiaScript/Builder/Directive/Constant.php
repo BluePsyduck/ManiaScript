@@ -15,7 +15,7 @@ class Constant extends AbstractDirective {
      * Builds the directive.
      * @return string The directive.
      */
-    public function build() {
-        return '#Const ' . $this->name . ' ' . $this->value . "\n";
+    public function getCode() {
+        return '#Const ' . $this->getName() . ' ' . $this->getValue() . "\n";
     }
 }

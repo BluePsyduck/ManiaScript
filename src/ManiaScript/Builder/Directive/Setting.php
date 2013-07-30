@@ -15,7 +15,7 @@ class Setting extends AbstractDirective {
      * Builds the directive.
      * @return string The directive.
      */
-    public function build() {
-        return '#Setting ' . $this->name . ' ' . $this->value . "\n";
+    public function getCode() {
+        return '#Setting ' . $this->getName() . ' ' . $this->getValue() . "\n";
     }
 }

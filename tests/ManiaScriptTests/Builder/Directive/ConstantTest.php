@@ -2,7 +2,6 @@
 
 namespace ManiaScriptTests\Builder\Directive;
 
-use ManiaScript\Builder\Directive\Constant;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -13,11 +12,17 @@ use PHPUnit_Framework_TestCase;
  */
 class ConstantTest extends PHPUnit_Framework_TestCase {
     /**
-     * Tests the build() method.
+     * Tests the getCode() method.
      */
-    public function testBuild() {
-        $directive = new Constant('abc', 'def');
-        $result = $directive->build();
+    public function testGetCode() {
+        $directive = $this->getMock('ManiaScript\Builder\Directive\Constant', array('getName', 'getValue'));
+        $directive->expects($this->any())
+                  ->method('getName')
+                  ->will($this->returnValue('abc'));
+        $directive->expects($this->any())
+                  ->method('getValue')
+                  ->will($this->returnValue('def'));
+        $result = $directive->getCode();
         $this->assertEquals('#Const abc def' . "\n", $result);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace ManiaScriptTests\Builder\Directive;
 
-use ManiaScript\Builder\Directive\Library;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
 
 /**
@@ -16,33 +15,29 @@ class LibraryTest extends GetterSetterTestCase {
      * Data provider of the constructor test.
      * @return array The data.
      */
-    public function providerConstruct() {
+    public function providerGetCode() {
         return array(
-            array('abc', 'def', 'abc', 'def'),
-            array('abc', 'abc', 'abc', '')
+            array('#Include "abc" as def' . "\n", 'abc', 'def'),
+            array('#Include "abc" as abc' . "\n", 'abc', '')
         );
     }
 
     /**
-     * Tests the constructor.
-     * @param string $expectedLibrary The expected library.
-     * @param unknown $expectedAlias The expected alias.
-     * @param unknown $library The library.
-     * @param unknown $alias The alias.
-     * @dataProvider providerConstruct
+     * Tests the getCode() method.
+     * @param string $expected The expected string.
+     * @param string $name The name of the library.
+     * @param string $value The alias of the library.
+     * @dataProvider providerGetCode
      */
-    public function testConstruct($expectedLibrary, $expectedAlias, $library, $alias) {
-        $directive = new Library($library, $alias);
-        $this->assertPropertyEquals($expectedLibrary, $directive, 'name');
-        $this->assertPropertyEquals($expectedAlias, $directive, 'value');
-    }
-
-    /**
-     * Tests the build() method.
-     */
-    public function testBuild() {
-        $directive = new Library('abc', 'def');
-        $result = $directive->build();
-        $this->assertEquals('#Include "abc" as def' . "\n", $result);
+    public function testGetCode($expected, $name, $value) {
+        $directive = $this->getMock('ManiaScript\Builder\Directive\Library', array('getName', 'getValue'));
+        $directive->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue($name));
+        $directive->expects($this->any())
+            ->method('getValue')
+            ->will($this->returnValue($value));
+        $result = $directive->getCode();
+        $this->assertEquals($expected, $result);
     }
 }

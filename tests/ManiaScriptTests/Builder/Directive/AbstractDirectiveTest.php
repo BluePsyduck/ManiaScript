@@ -12,17 +12,44 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  */
 class AbstractDirectiveTest extends GetterSetterTestCase {
     /**
-     * Tests the constructor.
+     * Tests the setName() method.
      */
-    public function testConstruct() {
-        $expectedName = 'abc';
-        $expectedValue = 'def';
-        $directive = $this->getMockForAbstractClass(
-            'ManiaScript\Builder\Directive\AbstractDirective',
-            array($expectedName, $expectedValue)
-        );
+    public function testSetName() {
+        $expected = 'abc';
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
+        $result = $directive->setName($expected);
+        $this->assertPropertyEquals($expected, $directive, 'name');
+        $this->assertEquals($directive, $result);
+    }
 
-        $this->assertPropertyEquals($expectedName, $directive, 'name');
-        $this->assertPropertyEquals($expectedValue, $directive, 'value');
+    /**
+     * Tests the getName() method.
+     */
+    public function testGetName() {
+        $expected = 'abc';
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
+        $this->injectProperty($directive, 'name', $expected);
+        $this->assertEquals($expected, $directive->getName());
+    }
+
+    /**
+     * Tests the setValue() method.
+     */
+    public function testSetValue() {
+        $expected = 'abc';
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
+        $result = $directive->setValue($expected);
+        $this->assertPropertyEquals($expected, $directive, 'value');
+        $this->assertEquals($directive, $result);
+    }
+
+    /**
+     * Tests the getValue() method.
+     */
+    public function testGetValue() {
+        $expected = 'abc';
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
+        $this->injectProperty($directive, 'value', $expected);
+        $this->assertEquals($expected, $directive->getValue());
     }
 }

@@ -12,22 +12,14 @@ use ManiaScript\Builder\Directive\AbstractDirective;
  */
 class Library extends AbstractDirective {
     /**
-     * Initialiozes the Library directive.
-     * @param string $library The name of the library.
-     * @param string $alias The alias. If omitted, the name will be used.
-     */
-    public function __construct($library, $alias = '') {
-        if (empty($alias)) {
-            $alias = $library;
-        }
-        parent::__construct($library, $alias);
-    }
-
-    /**
      * Builds the directive.
      * @return string The directive.
      */
-    public function build() {
-        return '#Include "' . $this->name . '" as ' . $this->value . "\n";
+    public function getCode() {
+        $value = $this->getValue();
+        if (empty($value)) {
+            $value = $this->getName();
+        }
+        return '#Include "' . $this->getName() . '" as ' . $value . "\n";
     }
 }
