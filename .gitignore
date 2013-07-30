@@ -5,7 +5,7 @@
 /composer.phar
 /phpunit.xml
 
-# Eclipse project files
-/.settings
 /.buildpath
+/.idea
 /.project
+/.settings
