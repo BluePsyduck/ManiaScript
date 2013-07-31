@@ -31,25 +31,4 @@ class AbstractDirectiveTest extends GetterSetterTestCase {
         $this->injectProperty($directive, 'name', $expected);
         $this->assertEquals($expected, $directive->getName());
     }
-
-    /**
-     * Tests the setValue() method.
-     */
-    public function testSetValue() {
-        $expected = 'abc';
-        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
-        $result = $directive->setValue($expected);
-        $this->assertPropertyEquals($expected, $directive, 'value');
-        $this->assertEquals($directive, $result);
-    }
-
-    /**
-     * Tests the getValue() method.
-     */
-    public function testGetValue() {
-        $expected = 'abc';
-        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
-        $this->injectProperty($directive, 'value', $expected);
-        $this->assertEquals($expected, $directive->getValue());
-    }
 }

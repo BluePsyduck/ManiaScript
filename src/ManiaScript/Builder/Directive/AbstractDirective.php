@@ -16,12 +16,6 @@ abstract class AbstractDirective {
     protected $name;
 
     /**
-     * The value of the directive.
-     * @var string
-     */
-    protected $value;
-
-    /**
      * Sets the name of the directive.
      * @param string $name The name.
      * @return \ManiaScript\Builder\Directive\AbstractDirective Implementing fluent interface.
@@ -40,26 +34,8 @@ abstract class AbstractDirective {
     }
 
     /**
-     * Sets the value of the directive.
-     * @param string $value The value.
-     * @return \ManiaScript\Builder\Directive\AbstractDirective Implementing fluent interface.
+     * Builds the directive code.
+     * @return string The code.
      */
-    public function setValue($value) {
-        $this->value = trim($value);
-        return $this;
-    }
-
-    /**
-     * Returns the value of the directive.
-     * @return string The value.
-     */
-    public function getValue() {
-        return $this->value;
-    }
-
-    /**
-     * Builds the directive.
-     * @return string The directive.
-     */
-    abstract public function getCode();
+    abstract public function buildCode();
 }

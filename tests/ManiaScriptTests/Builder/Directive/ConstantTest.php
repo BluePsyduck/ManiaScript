@@ -2,7 +2,8 @@
 
 namespace ManiaScriptTests\Builder\Directive;
 
-use PHPUnit_Framework_TestCase;
+use ManiaScript\Builder\Directive\Constant;
+use ManiaScriptTests\Assets\GetterSetterTestCase;
 
 /**
  * The PHPUnit test of the Constant directive.
@@ -10,11 +11,33 @@ use PHPUnit_Framework_TestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class ConstantTest extends PHPUnit_Framework_TestCase {
+class ConstantTest extends GetterSetterTestCase {
     /**
-     * Tests the getCode() method.
+     * Tests the setValue() method.
      */
-    public function testGetCode() {
+    public function testSetValue() {
+        $expected = 'abc';
+        $directive = new Constant();
+        $result = $directive->setValue($expected);
+        $this->assertPropertyEquals($expected, $directive, 'value');
+        $this->assertEquals($directive, $result);
+    }
+
+    /**
+     * Tests the getValue() method.
+     */
+    public function testGetValue() {
+        $expected = 'abc';
+        $directive = new Constant();
+        $this->injectProperty($directive, 'value', $expected);
+        $this->assertEquals($expected, $directive->getValue());
+    }
+
+    /**
+     * Tests the buildCode() method.
+     */
+    public function testBuildCode() {
+        /* @var $directive \ManiaScript\Builder\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */
         $directive = $this->getMock('ManiaScript\Builder\Directive\Constant', array('getName', 'getValue'));
         $directive->expects($this->any())
                   ->method('getName')
@@ -22,7 +45,7 @@ class ConstantTest extends PHPUnit_Framework_TestCase {
         $directive->expects($this->any())
                   ->method('getValue')
                   ->will($this->returnValue('def'));
-        $result = $directive->getCode();
+        $result = $directive->buildCode();
         $this->assertEquals('#Const abc def' . "\n", $result);
     }
 }

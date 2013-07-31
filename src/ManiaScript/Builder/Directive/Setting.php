@@ -12,10 +12,34 @@ use ManiaScript\Builder\Directive\AbstractDirective;
  */
 class Setting extends AbstractDirective {
     /**
-     * Builds the directive.
-     * @return string The directive.
+     * The value of the directive.
+     * @var string
      */
-    public function getCode() {
+    protected $value;
+
+    /**
+     * Sets the value of the directive.
+     * @param string $value The value
+     * @return \ManiaScript\Builder\Directive\Setting Implementing fluent interface.
+     */
+    public function setValue($value) {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * Returns the value of the directive.
+     * @return string The value.
+     */
+    public function getValue() {
+        return $this->value;
+    }
+
+    /**
+     * Builds the directive code.
+     * @return string The code.
+     */
+    public function buildCode() {
         return '#Setting ' . $this->getName() . ' ' . $this->getValue() . "\n";
     }
 }
