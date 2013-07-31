@@ -39,8 +39,8 @@ class LibraryTest extends GetterSetterTestCase {
      */
     public function providerGetCode() {
         return array(
-            array('#Include "abc" as def' . "\n", 'abc', 'def'),
-            array('#Include "abc" as abc' . "\n", 'abc', '')
+            array('#Include "abc" as def' . PHP_EOL, 'abc', 'def'),
+            array('#Include "abc" as abc' . PHP_EOL, 'abc', '')
         );
     }
 

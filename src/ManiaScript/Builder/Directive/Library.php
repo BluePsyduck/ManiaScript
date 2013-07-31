@@ -47,6 +47,6 @@ class Library extends AbstractDirective {
         if (empty($alias)) {
             $alias = $name;
         }
-        return '#Include "' . $name . '" as ' . $alias . "\n";
+        return '#Include "' . $name . '" as ' . $alias . PHP_EOL;
     }
 }

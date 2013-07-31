@@ -40,6 +40,6 @@ class Setting extends AbstractDirective {
      * @return string The code.
      */
     public function buildCode() {
-        return '#Setting ' . $this->getName() . ' ' . $this->getValue() . "\n";
+        return '#Setting ' . $this->getName() . ' ' . $this->getValue() . PHP_EOL;
     }
 }

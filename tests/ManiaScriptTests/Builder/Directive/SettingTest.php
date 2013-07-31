@@ -46,6 +46,6 @@ class SettingTest extends GetterSetterTestCase {
             ->method('getValue')
             ->will($this->returnValue('def'));
         $result = $directive->buildCode();
-        $this->assertEquals('#Setting abc def' . "\n", $result);
+        $this->assertEquals('#Setting abc def' . PHP_EOL, $result);
     }
 }

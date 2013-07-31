@@ -40,6 +40,6 @@ class Constant extends AbstractDirective {
      * @return string The code.
      */
     public function buildCode() {
-        return '#Const ' . $this->getName() . ' ' . $this->getValue() . "\n";
+        return '#Const ' . $this->getName() . ' ' . $this->getValue() . PHP_EOL;
     }
 }

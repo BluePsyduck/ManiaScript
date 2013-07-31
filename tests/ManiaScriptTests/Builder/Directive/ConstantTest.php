@@ -46,6 +46,6 @@ class ConstantTest extends GetterSetterTestCase {
                   ->method('getValue')
                   ->will($this->returnValue('def'));
         $result = $directive->buildCode();
-        $this->assertEquals('#Const abc def' . "\n", $result);
+        $this->assertEquals('#Const abc def' . PHP_EOL, $result);
     }
 }
