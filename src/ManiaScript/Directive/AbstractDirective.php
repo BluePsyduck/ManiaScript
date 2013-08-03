@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Builder\Directive;
+namespace ManiaScript\Directive;
 
 /**
  * Base class of the ManiaScript directives.
@@ -18,7 +18,7 @@ abstract class AbstractDirective {
     /**
      * Sets the name of the directive.
      * @param string $name The name.
-     * @return \ManiaScript\Builder\Directive\AbstractDirective Implementing fluent interface.
+     * @return \ManiaScript\Event\AbstractDirective Implementing fluent interface.
      */
     public function setName($name) {
         $this->name = trim($name);

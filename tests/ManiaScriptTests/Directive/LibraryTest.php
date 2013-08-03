@@ -1,8 +1,8 @@
 <?php
 
-namespace ManiaScriptTests\Builder\Directive;
+namespace ManiaScriptTests\Directive;
 
-use ManiaScript\Builder\Directive\Library;
+use ManiaScript\Directive\Library;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
 
 /**
@@ -52,8 +52,8 @@ class LibraryTest extends GetterSetterTestCase {
      * @dataProvider providerGetCode
      */
     public function testGetCode($expected, $name, $alias) {
-        /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Builder\Directive\Library', array('getName', 'getAlias'));
+        /* @var $directive \ManiaScript\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMock('ManiaScript\Directive\Library', array('getName', 'getAlias'));
         $directive->expects($this->any())
                   ->method('getName')
                   ->will($this->returnValue($name));

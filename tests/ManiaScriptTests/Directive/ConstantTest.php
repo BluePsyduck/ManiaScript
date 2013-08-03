@@ -1,23 +1,23 @@
 <?php
 
-namespace ManiaScriptTests\Builder\Directive;
+namespace ManiaScriptTests\Directive;
 
-use ManiaScript\Builder\Directive\Setting;
+use ManiaScript\Directive\Constant;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
 
 /**
- * The PHPUnit test of the Setting directive.
+ * The PHPUnit test of the Constant directive.
  *
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class SettingTest extends GetterSetterTestCase {
+class ConstantTest extends GetterSetterTestCase {
     /**
      * Tests the setValue() method.
      */
     public function testSetValue() {
         $expected = 'abc';
-        $directive = new Setting();
+        $directive = new Constant();
         $result = $directive->setValue($expected);
         $this->assertPropertyEquals($expected, $directive, 'value');
         $this->assertEquals($directive, $result);
@@ -28,24 +28,24 @@ class SettingTest extends GetterSetterTestCase {
      */
     public function testGetValue() {
         $expected = 'abc';
-        $directive = new Setting();
+        $directive = new Constant();
         $this->injectProperty($directive, 'value', $expected);
         $this->assertEquals($expected, $directive->getValue());
     }
 
     /**
-     * Tests the getCode() method.
+     * Tests the buildCode() method.
      */
-    public function testGetCode() {
-        /* @var $directive \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Builder\Directive\Setting', array('getName', 'getValue'));
+    public function testBuildCode() {
+        /* @var $directive \ManiaScript\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMock('ManiaScript\Directive\Constant', array('getName', 'getValue'));
         $directive->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('abc'));
+                  ->method('getName')
+                  ->will($this->returnValue('abc'));
         $directive->expects($this->any())
-            ->method('getValue')
-            ->will($this->returnValue('def'));
+                  ->method('getValue')
+                  ->will($this->returnValue('def'));
         $result = $directive->buildCode();
-        $this->assertEquals('#Setting abc def' . PHP_EOL, $result);
+        $this->assertEquals('#Const abc def' . PHP_EOL, $result);
     }
 }

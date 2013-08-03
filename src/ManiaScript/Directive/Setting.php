@@ -1,16 +1,14 @@
 <?php
 
-namespace ManiaScript\Builder\Directive;
-
-use ManiaScript\Builder\Directive\AbstractDirective;
+namespace ManiaScript\Directive;
 
 /**
- * The Constant directive generates a #Const line in the ManiaScript.
+ * The Setting directive generates a #Setting line in the ManiaScript.
  *
  * @author Marcel
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class Constant extends AbstractDirective {
+class Setting extends AbstractDirective {
     /**
      * The value of the directive.
      * @var string
@@ -20,7 +18,7 @@ class Constant extends AbstractDirective {
     /**
      * Sets the value of the directive.
      * @param string $value The value
-     * @return \ManiaScript\Builder\Directive\Constant Implementing fluent interface.
+     * @return \ManiaScript\Directive\Setting Implementing fluent interface.
      */
     public function setValue($value) {
         $this->value = $value;
@@ -40,6 +38,6 @@ class Constant extends AbstractDirective {
      * @return string The code.
      */
     public function buildCode() {
-        return '#Const ' . $this->getName() . ' ' . $this->getValue() . PHP_EOL;
+        return '#Setting ' . $this->getName() . ' ' . $this->getValue() . PHP_EOL;
     }
 }
