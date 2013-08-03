@@ -2,9 +2,9 @@
 
 namespace ManiaScript;
 
-use ManiaScript\Builder\Event\AbstractEvent;
+use ManiaScript\Event\AbstractEvent;
 use ManiaScript\Builder\Options;
-use ManiaScript\Builder\Directive\AbstractDirective;
+use ManiaScript\Directive\AbstractDirective;
 
 class Builder {
 
@@ -34,17 +34,6 @@ class Builder {
     }
 
     /**
-     * Sets the options of the builder.
-     * @param \ManiaScript\Builder\Options $options The options.
-     * @return \ManiaScript\Builder Implementing fluent interface.
-     */
-    public function setOptions(Options $options)
-    {
-        $this->options = $options;
-        return $this;
-    }
-
-    /**
      * Returns the options of the builder.
      * @return \ManiaScript\Builder\Options The options.
      */
@@ -54,7 +43,7 @@ class Builder {
 
     /**
      * Adds a directive to the ManiaScript.
-     * @param \ManiaScript\Builder\Directive\AbstractDirective $directive The directive.
+     * @param \ManiaScript\Directive\AbstractDirective $directive The directive.
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
     public function addDirective(AbstractDirective $directive) {
@@ -62,28 +51,7 @@ class Builder {
         return $this;
     }
 
-    /**
-     * Returns a previously added directive by its name.
-     * @param string $name The name of the directive.
-     * @return \ManiaScript\Builder\Directive\AbstractDirective|null The directive, or null if the name is not known.
-     */
-    public function getDirective($name) {
-        $result = null;
-        if (isset($this->directives[$name])) {
-            $result = $this->directives[$name];
-        }
-        return $result;
-    }
-
-    /**
-     * Removes a previously added directive.
-     * @param string $name The name of the directive.
-     * @return \ManiaScript\Builder Implementing fluent interface.
-     */
-    public function removeDirective($name) {
-        if (isset($this->directives[$name])) {
-            unset($this->directives[$name]);
-        }
+    public function addEvent(AbstractEvent $event) {
         return $this;
     }
 
@@ -115,7 +83,7 @@ class Builder {
      */
     protected function buildDirectives() {
         foreach ($this->directives as $directive) {
-            /* @var $directive \ManiaScript\Builder\Directive\AbstractDirective */
+            /* @var $directive \ManiaScript\Directive\AbstractDirective */
             $this->code .= $directive->buildCode();
         }
         return $this;

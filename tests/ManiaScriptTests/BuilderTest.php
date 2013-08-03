@@ -4,6 +4,9 @@ namespace ManiaScriptTests;
 
 use ManiaScript\Builder\Options;
 use ManiaScript\Builder;
+use ManiaScript\Directive\Constant;
+use ManiaScript\Directive\Library;
+use ManiaScript\Directive\Setting;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
 use ReflectionProperty;
 
@@ -25,16 +28,6 @@ class BuilderTest extends GetterSetterTestCase {
     }
 
     /**
-     * Tests the setOptions() method.
-     */
-    public function testSetOptions() {
-        $builder = new Builder();
-        $options = new Options();
-        $builder->setOptions($options);
-        $this->assertPropertyEquals($options, $builder, 'options');
-    }
-
-    /**
      * Tests the getOptions() method.
      */
     public function testGetOptions() {
@@ -49,15 +42,15 @@ class BuilderTest extends GetterSetterTestCase {
      * @return array The data.
      */
     public function providerAddDirective() {
-        $directive1 = new Builder\Directive\Setting();
+        $directive1 = new Setting();
         $directive1->setName('abc')
                    ->setValue('def');
 
-        $directive2 = new Builder\Directive\Constant();
+        $directive2 = new Constant();
         $directive2->setName('def')
                    ->setValue('ghi');
 
-        $directive3 = new Builder\Directive\Library();
+        $directive3 = new Library();
         $directive3->setName('abc')
                    ->setAlias('jkl');
 
@@ -83,7 +76,7 @@ class BuilderTest extends GetterSetterTestCase {
     /**
      * Tests the addDirective() method.
      * @param array $expected The expected direvties of the builder.
-     * @param \ManiaScript\Builder\Directive\AbstractDirective $newDirective The directive to be added.
+     * @param \ManiaScript\Builder\AbstractDirective $newDirective The directive to be added.
      * @param array $directives The directives before adding the new one.
      * @dataProvider providerAddDirective
      */

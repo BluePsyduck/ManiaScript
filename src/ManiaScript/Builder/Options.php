@@ -9,7 +9,6 @@ namespace ManiaScript\Builder;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 class Options {
-
     /**
      * Whether to compress the built ManiaScript.
      * @var boolean
@@ -25,7 +24,7 @@ class Options {
     /**
      * Sets whether to compress the built ManiaScript.
      * @param boolean $compress The compress state.
-     * @return \ManiaScript\Options Implementing fluent interface.
+     * @return \ManiaScript\Builder\Options Implementing fluent interface.
      */
     public function setCompress($compress) {
         $this->compress = (boolean) $compress;
@@ -43,7 +42,7 @@ class Options {
     /**
      * Sets whether to surround the built ManiaScript with a script tag.
      * @param boolean $includeScriptTag The include script tag state.
-     * @return \ManiaScript\Options Implementing fluent interface.
+     * @return \ManiaScript\Builder\Options Implementing fluent interface.
      */
     public function setIncludeScriptTag($includeScriptTag) {
         $this->includeScriptTag = $includeScriptTag;
