@@ -17,7 +17,8 @@ abstract class ControlHandler extends AbstractHandler {
      * @return string The event type.
      */
     protected function getEventType() {
-        return end(explode('\\', get_class($this)));
+        $parts = explode('\\', get_class($this));
+        return end($parts);
     }
 
     /**
@@ -50,10 +51,6 @@ abstract class ControlHandler extends AbstractHandler {
     protected function buildGlobalCodeOfEvent(AbstractEvent $event) {
         $result = '';
         if (!$event->getInline()) {
-//            $controlIds = $event->getControlIds();
-//            if (!empty($controlIds)) {
-//                $result .= '// Handled Control Ids: ' . implode(', ', $controlIds) . PHP_EOL;
-//            }
             $result .= 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL
                     . $event->getCode() . PHP_EOL
                     . '}' . PHP_EOL;

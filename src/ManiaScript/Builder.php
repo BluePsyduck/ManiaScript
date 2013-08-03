@@ -2,11 +2,12 @@
 
 namespace ManiaScript;
 
+use ManiaScript\Builder\Code;
+use ManiaScript\Builder\PriorityQueue;
 use ManiaScript\Event\AbstractEvent;
 use ManiaScript\Builder\Options;
 use ManiaScript\Directive\AbstractDirective;
 use ManiaScript\Event\Handler\Factory;
-
 
 class Builder {
 
@@ -29,6 +30,12 @@ class Builder {
     protected $eventHandlerFactory;
 
     /**
+     * Any code in the global scope.
+     * @var \ManiaScript\Builder\PriorityQueue
+     */
+    protected $globalCodes;
+
+    /**
      * The built code.
      * @var string
      */
@@ -40,6 +47,7 @@ class Builder {
     public function __construct() {
         $this->options = new Options();
         $this->eventHandlerFactory = new Factory();
+        $this->globalCodes = new PriorityQueue();
     }
 
     /**
@@ -57,6 +65,16 @@ class Builder {
      */
     public function addDirective(AbstractDirective $directive) {
         $this->directives[$directive->getName()] = $directive;
+        return $this;
+    }
+
+    /**
+     * Adds code to the global scope.
+     * @param \ManiaScript\Builder\Code $code The code.
+     * @return \ManiaScript\Builder Implementing fluent interface.
+     */
+    public function addGlobalCode(Code $code) {
+        $this->globalCodes->add($code);
         return $this;
     }
 
@@ -123,6 +141,10 @@ class Builder {
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
     protected function buildGlobalCode() {
+        foreach ($this->globalCodes as $code) {
+            /* @var $code \ManiaScript\Builder\Code */
+            $this->code .= $code->getCode();
+        }
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
             /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
             $this->code .= $handler->getGlobalCode();

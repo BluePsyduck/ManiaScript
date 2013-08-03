@@ -34,8 +34,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * @param string $code The code.
      * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
      */
-    public function setCode($code)
-    {
+    public function setCode($code) {
         $this->code = trim($code);
         return $this;
     }
@@ -44,8 +43,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * Returns the code to be executed when triggering the event.
      * @return string The code.
      */
-    public function getCode()
-    {
+    public function getCode() {
         return $this->code;
     }
 
@@ -54,8 +52,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * @param int $priority The priority.
      * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
      */
-    public function setPriority($priority)
-    {
+    public function setPriority($priority) {
         $this->priority = max(intval($priority), 0);
         return $this;
     }
@@ -64,8 +61,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * Returns the priority of the event. 0 for most important, greater for less important.
      * @return int The priority.
      */
-    public function getPriority()
-    {
+    public function getPriority() {
         return $this->priority;
     }
 
@@ -74,8 +70,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * @param boolean $inline The inline state.
      * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
      */
-    public function setInline($inline)
-    {
+    public function setInline($inline) {
         $this->inline = (bool) $inline;
         return $this;
     }
@@ -84,8 +79,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
      * Returns whether this event is handled inline, i.e. without wrapping function.
      * @return boolean The inline state.
      */
-    public function getInline()
-    {
+    public function getInline() {
         return $this->inline;
     }
 }

@@ -83,7 +83,8 @@ abstract class AbstractHandler {
     protected function getHandlerFunctionName(AbstractEvent $event) {
         $name = array_search($event, $this->handlerFunctionNames);
         if ($name === false) {
-            $class = end(explode('\\', get_class($this)));
+            $parts = explode('\\', get_class($event));
+            $class = end($parts);
             $name = '__Handle' . $class . count($this->handlerFunctionNames);
             $this->handlerFunctionNames[$name] = $event;
         }
