@@ -39,6 +39,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Tests the compress() method.
      */
     public function testCompress() {
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
         $compressor = $this->getMock('ManiaScript\Compressor', array('read'));
         $compressor->expects($this->once())
                    ->method('read');
@@ -62,7 +63,7 @@ class CompressorTest extends GetterSetterTestCase {
 
     /**
      * Data provider for the read test.
-     * @return The data.
+     * @return array The data.
      */
     public function providerRead() {
         return array(
@@ -239,22 +240,23 @@ class CompressorTest extends GetterSetterTestCase {
      */
     public function providerCopyUntil() {
         return array(
-            array('abc', 'abcdef', 0, 'c', 2),
-            array('abcdef', 'abcdef', 0, 'g', 6),
-            array('cd', 'abcdef', 2, 'd', 3)
+            array('abc', 3, 'abcdef', 0, 'c', 2),
+            array('abcdef', 7, 'abcdef', 0, 'g', 6),
+            array('cd', 4, 'abcdef', 2, 'd', 3)
         );
     }
 
     /**
      * Tests the copyUntil() method.
      * @param string $expected The expected compressed code.
+     * @param int $expectedPosition The expected position.
      * @param string $code The uncompressed code.
      * @param int $currentPosition The current position.
      * @param string $findString The string to copy until.
      * @param int $findResult The result of the find() method call.
      * @dataProvider providerCopyUntil
      */
-    public function testCopyUntil($expected, $code, $currentPosition, $findString, $findResult) {
+    public function testCopyUntil($expected, $expectedPosition, $code, $currentPosition, $findString, $findResult) {
         $compressor = $this->getMock('ManiaScript\Compressor', array('find'));
         $compressor->expects($this->any())
                    ->method('find')
@@ -267,6 +269,7 @@ class CompressorTest extends GetterSetterTestCase {
         $reflectedMethod->setAccessible(true);
         $reflectedMethod->invoke($compressor, $findString);
         $this->assertPropertyEquals($expected, $compressor, 'compressedCode');
+        $this->assertPropertyEquals($expectedPosition, $compressor, 'currentPosition');
     }
 
     /**
@@ -282,9 +285,9 @@ class CompressorTest extends GetterSetterTestCase {
 
     /**
      * Tests the skipUntil() method.
-     * @param int The expected position.
-     * @param int The position returned by find().
-     * @param string $string The string to use in finde().
+     * @param int $expected The expected position.
+     * @param int $find The position returned by find().
+     * @param string $string The string to use in find().
      * @dataProvider providerSkipUntil
      */
     public function testSkipUntil($expected, $find, $string) {
