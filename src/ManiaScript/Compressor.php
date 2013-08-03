@@ -182,7 +182,7 @@ class Compressor {
     protected function copyUntil($string) {
         $newPosition = $this->find($string) + strlen($string);
         $this->compressedCode .= substr($this->code, $this->currentPosition, $newPosition - $this->currentPosition);
-        $this->position = $newPosition;
+        $this->currentPosition = $newPosition;
     }
 
     /**
