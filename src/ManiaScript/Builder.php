@@ -5,6 +5,8 @@ namespace ManiaScript;
 use ManiaScript\Event\AbstractEvent;
 use ManiaScript\Builder\Options;
 use ManiaScript\Directive\AbstractDirective;
+use ManiaScript\Event\Handler\Factory;
+
 
 class Builder {
 
@@ -21,6 +23,12 @@ class Builder {
     protected $directives = array();
 
     /**
+     * The event handler factory.
+     * @var \ManiaScript\Event\Handler\Factory
+     */
+    protected $eventHandlerFactory;
+
+    /**
      * The built code.
      * @var string
      */
@@ -31,6 +39,7 @@ class Builder {
      */
     public function __construct() {
         $this->options = new Options();
+        $this->eventHandlerFactory = new Factory();
     }
 
     /**
@@ -51,7 +60,13 @@ class Builder {
         return $this;
     }
 
+    /**
+     * Adds an event to the builder.
+     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @return \ManiaScript\Builder Implementing fluent interface.
+     */
     public function addEvent(AbstractEvent $event) {
+        $this->eventHandlerFactory->getEventHandler($event)->addEvent($event);
         return $this;
     }
 
@@ -62,7 +77,10 @@ class Builder {
     public function build() {
         $this->code = '#RequireContext CMlScript' . PHP_EOL;
 
-        $this->buildDirectives()
+        $this->prepareEvents()
+             ->buildDirectives()
+             ->buildGlobalCode()
+             ->buildMainFunction()
              ->compress()
              ->addScriptTag();
         return $this;
@@ -72,9 +90,20 @@ class Builder {
      * Returns the ManiaScript code.
      * @return string The code.
      */
-    public function getCode()
-    {
+    public function getCode() {
         return $this->code;
+    }
+
+    /**
+     * Prepares all the events.
+     * @return \ManiaScript\Builder Implementing fluent interface.
+     */
+    protected function prepareEvents() {
+        foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
+            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            $handler->buildCode();
+        }
+        return $this;
     }
 
     /**
@@ -86,6 +115,41 @@ class Builder {
             /* @var $directive \ManiaScript\Directive\AbstractDirective */
             $this->code .= $directive->buildCode();
         }
+        return $this;
+    }
+
+    /**
+     * Builds the global code of the ManiaScript.
+     * @return \ManiaScript\Builder Implementing fluent interface.
+     */
+    protected function buildGlobalCode() {
+        foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
+            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            $this->code .= $handler->getGlobalCode();
+        }
+        return $this;
+    }
+
+    /**
+     * Builds the main function of the ManiaScript.
+     * @return \ManiaScript\Builder Implementing fluent interface.
+     */
+    protected function buildMainFunction() {
+        $this->code .= 'main() {' . PHP_EOL
+                     . '    while(True) {' . PHP_EOL
+                     . '        yield;' . PHP_EOL
+                     . '        foreach (Event in PendingEvents) {' . PHP_EOL
+                     . '            switch (Event.Type) {' . PHP_EOL;
+
+        foreach ($this->eventHandlerFactory->getAllControlHandlers() as $handler) {
+            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            $this->code .= $handler->getInlineCode();
+        }
+
+        $this->code .= '            }' . PHP_EOL
+                     . '        }' . PHP_EOL
+                     . '    }'
+                     . '}';
         return $this;
     }
 

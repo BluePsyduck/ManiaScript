@@ -45,6 +45,14 @@ class PriorityQueue implements Iterator {
     }
 
     /**
+     * Checks whether the queue is currently empty.
+     * @return boolean The result of the check.
+     */
+    public function isEmpty() {
+        return empty($this->items);
+    }
+
+    /**
      * Merges the items of the priority queue to one single list, paying attention to the priorities. The result is
      * written to the mergedItems property.
      * @return \ManiaScript\Builder\PriorityQueue Implementing fluent interface.
