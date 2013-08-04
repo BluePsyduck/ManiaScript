@@ -18,17 +18,27 @@ class Factory {
     protected $instances = array();
 
     /**
+     * Returns the handler of the specified name.
+     * @param string $name The handler name.
+     * @return \ManiaScript\Event\Handler\AbstractHandler The handler.
+     */
+    public function getHandler($name) {
+        if (!isset($this->instances[$name])) {
+            $handlerClass = __NAMESPACE__ . '\\' . $name;
+            $this->instances[$name] = new $handlerClass();
+        }
+        return $this->instances[$name];
+    }
+
+    /**
      * Returns the event handler responsible for the specified event.
      * @param \ManiaScript\Event\AbstractEvent $event The event.
      * @return \ManiaScript\Event\Handler\AbstractHandler The event handler.
      */
-    public function getEventHandler(AbstractEvent $event) {
-        $class = end(explode('\\', get_class($event)));
-        if (!isset($this->instances[$class])) {
-            $handlerClass = __NAMESPACE__ . '\\' . $class;
-            $this->instances[$class] = new $handlerClass();
-        }
-        return $this->instances[$class];
+    public function getHandlerForEvent(AbstractEvent $event) {
+        $parts = explode('\\', get_class($event));
+        $class = end($parts);
+        return $this->getHandler($class);
     }
 
     /**
@@ -48,4 +58,5 @@ class Factory {
         }
         return $result;
     }
+
 }

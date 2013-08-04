@@ -90,4 +90,24 @@ abstract class AbstractHandler {
         }
         return $name;
     }
+
+    /**
+     * Builds the handler function of the event.
+     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @return string THe handler function.
+     */
+    protected function buildHandlerFunction($event) {
+        return 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL
+            . $event->getCode() . PHP_EOL
+            . '}' . PHP_EOL;
+    }
+
+    /**
+     * Builds the call of the handler function of the event.
+     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @return string The handler function call.
+     */
+    protected function buildHandlerFunctionCall($event) {
+        return $this->getHandlerFunctionName($event) . '();' . PHP_EOL;
+    }
 }

@@ -31,14 +31,14 @@ abstract class ControlHandler extends AbstractHandler {
 
         if (!$this->events->isEmpty()) {
 
-            $this->inlineCode .= '            case CMlEvent::Type::' . $this->getEventType() . ': {' . PHP_EOL;
+            $this->inlineCode .= '                case CMlEvent::Type::' . $this->getEventType() . ': {' . PHP_EOL;
 
             foreach ($this->events as $event) {
                 $this->globalCode .= $this->buildGlobalCodeOfEvent($event);
                 $this->inlineCode .= $this->buildInlineCodeOfEvent($event);
             }
 
-            $this->inlineCode .= '            }' . PHP_EOL;
+            $this->inlineCode .= '                }' . PHP_EOL;
         }
         return $this;
     }
@@ -51,9 +51,7 @@ abstract class ControlHandler extends AbstractHandler {
     protected function buildGlobalCodeOfEvent(AbstractEvent $event) {
         $result = '';
         if (!$event->getInline()) {
-            $result .= 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL
-                    . $event->getCode() . PHP_EOL
-                    . '}' . PHP_EOL;
+            $result .= $this->buildHandlerFunction($event);
         }
         return $result;
     }
@@ -65,17 +63,17 @@ abstract class ControlHandler extends AbstractHandler {
      */
     protected function buildInlineCodeOfEvent(AbstractEvent $event) {
         if ($event->getInline()) {
-            $code = $event->getCode();
+            $code = $event->getCode() . PHP_EOL;
         } else {
-            $code = $this->getHandlerFunctionName($event) . '();';
+            $code = $this->buildHandlerFunctionCall($event);
         }
         $condition = $this->buildCondition($event);
         if (empty($condition)) {
-            $result = $code . PHP_EOL;
+            $result = $code;
         } else {
-            $result = '                if (' . $condition . ') {' . PHP_EOL
-                    . $code . PHP_EOL
-                    . '                }' . PHP_EOL;
+            $result = '                    if (' . $condition . ') {' . PHP_EOL
+                    . $code
+                    . '                    }' . PHP_EOL;
         }
         return $result;
     }

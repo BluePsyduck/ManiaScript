@@ -84,7 +84,7 @@ class Builder {
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
     public function addEvent(AbstractEvent $event) {
-        $this->eventHandlerFactory->getEventHandler($event)->addEvent($event);
+        $this->eventHandlerFactory->getHandlerForEvent($event)->addEvent($event);
         return $this;
     }
 
@@ -95,7 +95,7 @@ class Builder {
     public function build() {
         $this->code = '#RequireContext CMlScript' . PHP_EOL;
 
-        $this->prepareEvents()
+        $this->prepareHandlers()
              ->buildDirectives()
              ->buildGlobalCode()
              ->buildMainFunction()
@@ -116,7 +116,7 @@ class Builder {
      * Prepares all the events.
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
-    protected function prepareEvents() {
+    protected function prepareHandlers() {
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
             /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
             $handler->buildCode();
@@ -143,7 +143,7 @@ class Builder {
     protected function buildGlobalCode() {
         foreach ($this->globalCodes as $code) {
             /* @var $code \ManiaScript\Builder\Code */
-            $this->code .= $code->getCode();
+            $this->code .= $code->getCode() . PHP_EOL;
         }
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
             /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
@@ -158,8 +158,11 @@ class Builder {
      */
     protected function buildMainFunction() {
         $this->code .= 'main() {' . PHP_EOL
+                     . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
+                     . '    yield;' . PHP_EOL
+                     . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
                      . '    while(True) {' . PHP_EOL
-                     . '        yield;' . PHP_EOL
+                     . $this->eventHandlerFactory->getHandler('Loop')->getInlineCode()
                      . '        foreach (Event in PendingEvents) {' . PHP_EOL
                      . '            switch (Event.Type) {' . PHP_EOL;
 
@@ -170,8 +173,9 @@ class Builder {
 
         $this->code .= '            }' . PHP_EOL
                      . '        }' . PHP_EOL
-                     . '    }'
-                     . '}';
+                     . '    yield;' . PHP_EOL
+                     . '    }' . PHP_EOL
+                     . '}' . PHP_EOL;
         return $this;
     }
 
