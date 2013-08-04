@@ -199,7 +199,7 @@ class Builder {
      */
     protected function addScriptTag() {
         if ($this->options->getIncludeScriptTag()) {
-            $this->code = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[', $this->code) . ']]></script>';
+            $this->code = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $this->code) . ']]></script>';
         }
         return $this;
     }

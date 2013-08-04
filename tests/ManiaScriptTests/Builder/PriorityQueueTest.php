@@ -14,12 +14,11 @@ use ReflectionMethod;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 class PriorityQueueTest extends GetterSetterTestCase {
-
     /**
      * Provides the data for the add() test.
      * @return array The data.
      */
-    public function providerAdd() {
+    public function provideAdd() {
         $item1 = new PriorityQueueItem(42);
         $item2 = new PriorityQueueItem(21);
         $item3 = new PriorityQueueItem(42);
@@ -48,7 +47,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
      * @param array $expected The expected items.
      * @param \ManiaScript\Builder\PriorityQueueItem $newItem The item to be added.
      * @param array $existingItems The items before adding the new one.
-     * @dataProvider providerAdd
+     * @dataProvider provideAdd
      */
     public function testAdd($expected, $newItem, $existingItems) {
         $queue = new PriorityQueue();
@@ -56,6 +55,30 @@ class PriorityQueueTest extends GetterSetterTestCase {
         $result = $queue->add($newItem);
         $this->assertEquals($queue, $result);
         $this->assertPropertyEquals($expected, $queue, 'items');
+    }
+
+    /**
+     * Provides the data for the isEmpty() test.
+     * @return array The data.
+     */
+    public function provideIsEmpty() {
+        return array(
+            array(true, array()),
+            array(false, array(new PriorityQueueItem(42)))
+        );
+    }
+
+    /**
+     * Tests the isEmpty() method.
+     * @param boolean $expected The expected result.
+     * @param array $items The items of the queue.
+     * @dataProvider provideIsEmpty
+     */
+    public function testIsEmpty($expected, $items) {
+        $queue = new PriorityQueue();
+        $this->injectProperty($queue, 'items', $items);
+        $result = $queue->isEmpty();
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -106,7 +129,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
      * Provides the data for the valid() test.
      * @return array The data.
      */
-    public function providerValid() {
+    public function provideValid() {
         $items = array('abc', 'def', 'ghi');
         return array(
             array(true, 0, $items),
@@ -120,7 +143,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
      * @param boolean $expected The expected result.
      * @param int $currentIndex The current index to be set.
      * @param array $mergedItems The merged items to be set.
-     * @dataProvider providerValid
+     * @dataProvider provideValid
      */
     public function testValid($expected, $currentIndex, $mergedItems) {
         $queue = new PriorityQueue();
@@ -145,7 +168,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
      * Provides the data for the current() test.
      * @return array The data.
      */
-    public function providerCurrent() {
+    public function provideCurrent() {
         $items = array('abc', 'def', 'ghi');
         return array(
             array('abc', 0, $items),
@@ -159,7 +182,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
      * @param mixed $expected The expected value.
      * @param int $currentIndex The current index to be set.
      * @param array $mergedItems The merged items to be set.
-     * @dataProvider providerCurrent
+     * @dataProvider provideCurrent
      */
     public function testCurrent($expected, $currentIndex, $mergedItems) {
         $queue = new PriorityQueue();

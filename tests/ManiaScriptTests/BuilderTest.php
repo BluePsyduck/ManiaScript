@@ -10,6 +10,7 @@ use ManiaScript\Directive\Library;
 use ManiaScript\Directive\Setting;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ReflectionMethod;
 use ReflectionProperty;
 
 /**
@@ -158,4 +159,73 @@ class BuilderTest extends GetterSetterTestCase {
         $this->assertEquals($expected, $builder->getCode());
     }
 
+    /**
+     * Tests the prepareHandlers() method.
+     */
+    public function testPrepareHandlers() {
+        $this->markTestIncomplete('Test for prepareHandlers() not implemented.');
+    }
+
+    /**
+     * Tests the buildDirectives() method.
+     */
+    public function testBuildDirectives() {
+        $this->markTestIncomplete('Test for buildDirectives() not implemented.');
+    }
+
+    /**
+     * Tests the buildGlobalCode() method.
+     */
+    public function testBuildGlobalCode() {
+        $this->markTestIncomplete('Test for buildGlobalCode() not implemented.');
+    }
+
+    /**
+     * Tests the buildMainFunction() method.
+     */
+    public function testBuildMainFunction() {
+        $this->markTestIncomplete('Test for buildMainFunction() not implemented.');
+    }
+
+    /**
+     * Tests the compress() method.
+     */
+    public function testCompress() {
+        $this->markTestIncomplete('Test for compress() not implemented.');
+    }
+
+    /**
+     * Provides the data for the addScriptTag() test.
+     * @return array The data.
+     */
+    public function provideAddScriptTag() {
+        return array(
+            array('abc', 'abc', false),
+            array('<script><![CDATA[abc]]></script>', 'abc', true),
+            array('<script><![CDATA[abc]]]]><![CDATA[>def]]></script>', 'abc]]>def', true)
+        );
+    }
+
+    /**
+     * Tests the addScriptTag() method.
+     * @param string The expected code.
+     * @param string $code The code to be set.
+     * @param boolean $optionIncludeTag The include tag option.
+     * @dataProvider provideAddScriptTag
+     */
+    public function testAddScriptTag($expected, $code, $optionIncludeTag) {
+        $options = new Options();
+        $options->setIncludeScriptTag($optionIncludeTag);
+
+        $builder = new Builder();
+        $this->injectProperty($builder, 'options', $options)
+             ->injectProperty($builder, 'code', $code);
+
+
+        $reflectedMethod = new ReflectionMethod($builder, 'addScriptTag');
+        $reflectedMethod->setAccessible(true);
+        $result = $reflectedMethod->invoke($builder);
+        $this->assertPropertyEquals($expected, $builder, 'code');
+        $this->assertEquals($builder, $result);
+    }
 }

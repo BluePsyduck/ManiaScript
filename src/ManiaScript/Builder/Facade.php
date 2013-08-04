@@ -8,6 +8,7 @@ use ManiaScript\Directive\Library;
 use ManiaScript\Directive\Setting;
 use ManiaScript\Event\EntrySubmit;
 use ManiaScript\Event\FirstLoop;
+use ManiaScript\Event\KeyPress;
 use ManiaScript\Event\Load;
 use ManiaScript\Event\Loop;
 use ManiaScript\Event\MouseClick;
@@ -184,7 +185,7 @@ class Facade {
      * @return \ManiaScript\Builder\Facade Implementing fluent interface.
      */
     public function addKeyPress($code, $keyCodes = array(), $priority = 5, $inline = false) {
-        $keyPress = new EntrySubmit();
+        $keyPress = new KeyPress();
         $keyPress->setCode($code)
                  ->setKeyCodes($keyCodes)
                  ->setPriority($priority)

@@ -19,7 +19,7 @@ class GetterSetterTestCase extends PHPUnit_Framework_TestCase {
      * @param string $name The name of the property.
      * @return \ManiaScriptTests\Assets\GetterSetterTestCase Implementing fluent interface.
      */
-    protected function assertPropertyEquals($expected, $object, $name) {
+    public function assertPropertyEquals($expected, $object, $name) {
         $reflectedProperty = new ReflectionProperty($object, $name);
         $reflectedProperty->setAccessible(true);
         $this->assertEquals($expected, $reflectedProperty->getValue($object));

@@ -27,6 +27,27 @@ class ControlHandlerTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Tests the buildCode() method.
+     */
+    public function testBuildCode() {
+        $this->markTestIncomplete('Test for buildCode() not implemented.');
+    }
+
+    /**
+     * Tests the buildGlobalCodeOfEvent() method.
+     */
+    public function testBuildGlobalCodeOfEvent() {
+        $this->markTestIncomplete('Test for buildGlobalCodeOfEvent() not implemented.');
+    }
+
+    /**
+     * Tests the buildInlineCodeOfEvent() method.
+     */
+    public function testBuildInlineCodeOfEvent() {
+        $this->markTestIncomplete('Test for buildInlineCodeOfEvent() not implemented.');
+    }
+
+    /**
      * Provides the data for the buildCondition() test.
      * @return array The data.
      */

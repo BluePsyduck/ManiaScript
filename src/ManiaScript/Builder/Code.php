@@ -27,7 +27,7 @@ class Code implements PriorityQueueItem {
      * @return \ManiaScript\Builder\Code Implementing fluent interface.
      */
     public function setPriority($priority) {
-        $this->priority = $priority;
+        $this->priority = max(intval($priority), 0);
         return $this;
     }
 
@@ -44,7 +44,7 @@ class Code implements PriorityQueueItem {
      * @return \ManiaScript\Builder\Code Implementing fluent interface.
      */
     public function setCode($code) {
-        $this->code = $code;
+        $this->code = trim($code);
         return $this;
     }
 

@@ -19,7 +19,7 @@ class KeyPress extends ControlHandler {
     protected function buildCondition($event) {
         $conditions = array();
         foreach ($event->getKeyCodes() as $code) {
-            $conditions[$code] = 'Event.KeyCode == "' . $code . '"';
+            $conditions[$code] = 'Event.KeyCode == ' . $code;
         }
 
         $result = '';

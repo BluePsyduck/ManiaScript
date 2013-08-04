@@ -49,6 +49,10 @@ class Factory {
         return array_values($this->instances);
     }
 
+    /**
+     * Returns all ControlHandler instances currently known to the factory.
+     * @return array The ControlHandlers
+     */
     public function getAllControlHandlers() {
         $result = array();
         foreach ($this->instances as $instance) {
@@ -58,5 +62,4 @@ class Factory {
         }
         return $result;
     }
-
 }

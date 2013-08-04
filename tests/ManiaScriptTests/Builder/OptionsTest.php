@@ -4,7 +4,6 @@ namespace ManiaScriptTests\Builder;
 
 use ManiaScript\Builder\Options;
 use ManiaScriptTests\Assets\GetterSetterTestCase;
-use ReflectionProperty;
 
 /**
  * The PHPUnit test of the Options class.
