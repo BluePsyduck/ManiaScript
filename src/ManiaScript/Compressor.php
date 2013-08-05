@@ -90,6 +90,9 @@ class Compressor {
         return $this->compressedCode;
     }
 
+    /**
+     * Reads and handles the current character of the code.
+     */
     protected function read() {
         while ($this->currentPosition < $this->codeLength) {
             $startPosition = $this->currentPosition;

@@ -3,9 +3,8 @@
 namespace ManiaScriptTests\Builder;
 
 use ManiaScript\Builder\PriorityQueue;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 use ManiaScriptTests\Assets\PriorityQueueItem;
-use ReflectionMethod;
 
 /**
  * The PHPUnit test of the Priority Queue.
@@ -13,7 +12,7 @@ use ReflectionMethod;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class PriorityQueueTest extends GetterSetterTestCase {
+class PriorityQueueTest extends TestCase {
     /**
      * Provides the data for the add() test.
      * @return array The data.
@@ -95,9 +94,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
         $queue = new PriorityQueue();
         $this->injectProperty($queue, 'items', $rawItems);
 
-        $reflectedProperty = new ReflectionMethod($queue, 'mergeItems');
-        $reflectedProperty->setAccessible(true);
-        $result = $reflectedProperty->invoke($queue);
+        $result = $this->invokeMethod($queue, 'mergeItems', array($queue));
         $this->assertPropertyEquals($expected, $queue, 'mergedItems');
         $this->assertEquals($queue, $result);
     }
@@ -148,7 +145,7 @@ class PriorityQueueTest extends GetterSetterTestCase {
     public function testValid($expected, $currentIndex, $mergedItems) {
         $queue = new PriorityQueue();
         $this->injectProperty($queue, 'mergedItems', $mergedItems)
-            ->injectProperty($queue, 'currentIndex', $currentIndex);
+             ->injectProperty($queue, 'currentIndex', $currentIndex);
         $result = $queue->valid();
         $this->assertEquals($expected, $result);
     }

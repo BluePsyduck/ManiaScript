@@ -3,9 +3,7 @@
 namespace ManiaScriptTests\Event\Handler;
 
 use ManiaScriptTests\Assets\Event;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
-use ReflectionMethod;
-use ReflectionProperty;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test for the abstract event handler.
@@ -13,17 +11,14 @@ use ReflectionProperty;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class AbstractHandlerTest extends GetterSetterTestCase {
+class AbstractHandlerTest extends TestCase {
     /**
      * Tests the constructor.
      */
     public function testConstruct() {
         /* @var $handler \ManiaScript\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
         $handler = $this->getMockForAbstractClass('ManiaScript\Event\Handler\AbstractHandler');
-
-        $reflectedProperty = new ReflectionProperty($handler, 'events');
-        $reflectedProperty->setAccessible(true);
-        $result = $reflectedProperty->getValue($handler);
+        $result = $this->extractProperty($handler, 'events');
         $this->assertInstanceOf('ManiaScript\Builder\PriorityQueue', $result);
     }
 
@@ -117,10 +112,7 @@ class AbstractHandlerTest extends GetterSetterTestCase {
         $handler = $this->getMockForAbstractClass('ManiaScript\Event\Handler\AbstractHandler');
 
         $this->injectProperty($handler, 'handlerFunctionNames', $array);
-
-        $reflectedMethod = new ReflectionMethod($handler, 'getHandlerFunctionName');
-        $reflectedMethod->setAccessible(true);
-        $result = $reflectedMethod->invoke($handler, $event);
+        $result = $this->invokeMethod($handler, 'getHandlerFunctionName', array($event));
 
         $this->assertPropertyEquals($expectedArray, $handler, 'handlerFunctionNames');
         $this->assertEquals($expectedName, $result);

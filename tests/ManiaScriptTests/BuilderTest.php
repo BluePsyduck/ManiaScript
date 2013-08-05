@@ -9,9 +9,7 @@ use ManiaScript\Directive\Constant;
 use ManiaScript\Directive\Library;
 use ManiaScript\Directive\Setting;
 use ManiaScriptTests\Assets\Event;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
-use ReflectionMethod;
-use ReflectionProperty;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the Builder class.
@@ -19,15 +17,14 @@ use ReflectionProperty;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class BuilderTest extends GetterSetterTestCase {
+class BuilderTest extends TestCase {
     /**
      * Tests the constructor.
      */
     public function testConstruct() {
         $builder = new Builder();
-        $reflectedProperty = new ReflectionProperty($builder, 'options');
-        $reflectedProperty->setAccessible(true);
-        $this->assertInstanceOf('ManiaScript\Builder\Options', $reflectedProperty->getValue($builder));
+        $result = $this->extractProperty($builder, 'options');
+        $this->assertInstanceOf('ManiaScript\Builder\Options', $result);
     }
 
     /**
@@ -221,10 +218,7 @@ class BuilderTest extends GetterSetterTestCase {
         $this->injectProperty($builder, 'options', $options)
              ->injectProperty($builder, 'code', $code);
 
-
-        $reflectedMethod = new ReflectionMethod($builder, 'addScriptTag');
-        $reflectedMethod->setAccessible(true);
-        $result = $reflectedMethod->invoke($builder);
+        $result = $this->invokeMethod($builder, 'addScriptTag');
         $this->assertPropertyEquals($expected, $builder, 'code');
         $this->assertEquals($builder, $result);
     }

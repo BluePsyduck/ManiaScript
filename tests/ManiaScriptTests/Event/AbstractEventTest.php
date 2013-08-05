@@ -3,7 +3,7 @@
 namespace ManiaScriptTests\Event;
 
 use ManiaScript\AbstractEvent;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the AbstractEvent class.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class EventTest extends GetterSetterTestCase {
+class EventTest extends TestCase {
     /**
      * Tests the setCode() method.
      */

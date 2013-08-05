@@ -2,7 +2,7 @@
 
 namespace ManiaScriptTests\Directive;
 
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the AbstractDirective class.
@@ -10,7 +10,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class AbstractDirectiveTest extends GetterSetterTestCase {
+class AbstractDirectiveTest extends TestCase {
     /**
      * Tests the setName() method.
      */

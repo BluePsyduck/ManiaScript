@@ -3,7 +3,7 @@
 
 namespace ManiaScriptTests\Event;
 
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the ControlEvent class.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class ControlEventTest extends GetterSetterTestCase {
+class ControlEventTest extends TestCase {
     /**
      * Data provider for the setControlIds() test.
      * @return array The data.

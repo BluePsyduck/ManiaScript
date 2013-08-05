@@ -3,7 +3,7 @@
 namespace ManiaScriptTests;
 
 use ManiaScript\Compressor;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 use ReflectionMethod;
 
 /**
@@ -12,7 +12,7 @@ use ReflectionMethod;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class CompressorTest extends GetterSetterTestCase {
+class CompressorTest extends TestCase {
     /**
      * Tests property initialization on class construction.
      */
@@ -65,7 +65,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the read test.
      * @return array The data.
      */
-    public function providerRead() {
+    public function provideRead() {
         return array(
             array('readSlash', '/'),
             array('readDirective', '#'),
@@ -79,7 +79,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Tests the read() method.
      * @param string|null $expected The method expected to be called.
      * @param string $code The code to be used.
-     * @dataProvider providerRead
+     * @dataProvider provideRead
      */
     public function testRead($expected, $code) {
         $methods = array('readSlash', 'readDirective', 'readString', 'readWhitespace');
@@ -98,10 +98,7 @@ class CompressorTest extends GetterSetterTestCase {
         $this->injectProperty($compressor, 'code', $code)
              ->injectProperty($compressor, 'codeLength', strlen($code));
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'read');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
-
+        $this->invokeMethod($compressor, 'read');
         $this->assertPropertyEquals(1, $compressor, 'currentPosition');
     }
 
@@ -109,7 +106,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the readSlash test.
      * return array The data.
      */
-    public function providerReadSlash() {
+    public function provideReadSlash() {
         return array(
             array("\n", '//', 0),
             array("\n", 'abc//', 3),
@@ -127,7 +124,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param string|null $expected The parameter expected in skipUntil(), or null if not called.
      * @param string $code The code to be used.
      * @param int $currentPosition The current position in the code.
-     * @dataProvider providerReadSlash
+     * @dataProvider provideReadSlash
      */
     public function testReadSlash($expected, $code, $currentPosition) {
         $compressor = $this->getMock('ManiaScript\Compressor', array('skipUntil'));
@@ -145,9 +142,7 @@ class CompressorTest extends GetterSetterTestCase {
                        ->with($expected);
         }
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'readSlash');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
+        $this->invokeMethod($compressor, 'readSlash');
     }
 
     /**
@@ -158,17 +153,14 @@ class CompressorTest extends GetterSetterTestCase {
         $compressor->expects($this->once())
                    ->method('copyUntil')
                    ->with("\n");
-
-        $reflectedMethod = new ReflectionMethod($compressor, 'readDirective');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
+        $this->invokeMethod($compressor, 'readDirective');
     }
 
     /**
      * Data provider for the readString test.
      * @return array The data.
      */
-    public function providerReadString() {
+    public function provideReadString() {
         return array(
             array(2, 'abc""', '""', 0, 'abc'),
             array(5, 'abc"def"', '"def"', 0, 'abc'),
@@ -184,7 +176,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param string $code The code to be used.
      * @param int $currentPosition The current position.
      * @param string $compressedCode The compressed code.
-     * @dataProvider providerReadString
+     * @dataProvider provideReadString
      */
     public function testReadString($expectedPosition, $expectedCode, $code, $currentPosition, $compressedCode) {
         $compressor = new Compressor();
@@ -193,19 +185,17 @@ class CompressorTest extends GetterSetterTestCase {
              ->injectProperty($compressor, 'currentPosition', $currentPosition)
              ->injectProperty($compressor, 'compressedCode', $compressedCode);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'readString');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
+        $this->invokeMethod($compressor, 'readString');
 
         $this->assertPropertyEquals($expectedPosition, $compressor, 'currentPosition');
         $this->assertPropertyEquals($expectedCode, $compressor, 'compressedCode');
     }
 
     /**
-     * Data porovider for the readWhitespace test.
+     * Data provider for the readWhitespace test.
      * @return array The data.
      */
-    public function providerReadWhitespace() {
+    public function provideReadWhitespace() {
         return array(
             array('abc ', 'abc', true),
             array('abc', 'abc', false)
@@ -217,7 +207,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param string $expected The expected compressed code.
      * @param string $compressedCode The compressed code.
      * @param boolean $isWhitespaceRequired The result of the isWhitespaceRequired() call.
-     * @dataProvider providerReadWhitespace
+     * @dataProvider provideReadWhitespace
      */
     public function testReadWhitespace($expected, $compressedCode, $isWhitespaceRequired) {
         $compressor = $this->getMock('ManiaScript\Compressor', array('isWhitespaceRequired', 'skipWhitespace'));
@@ -228,9 +218,7 @@ class CompressorTest extends GetterSetterTestCase {
                    ->method('skipWhitespace');
         $this->injectProperty($compressor, 'compressedCode', $compressedCode);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'readWhitespace');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
+        $this->invokeMethod($compressor, 'readWhitespace');
         $this->assertPropertyEquals($expected, $compressor, 'compressedCode');
     }
 
@@ -238,7 +226,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the copyUntil test.
      * @return array The data.
      */
-    public function providerCopyUntil() {
+    public function provideCopyUntil() {
         return array(
             array('abc', 3, 'abcdef', 0, 'c', 2),
             array('abcdef', 7, 'abcdef', 0, 'g', 6),
@@ -254,7 +242,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param int $currentPosition The current position.
      * @param string $findString The string to copy until.
      * @param int $findResult The result of the find() method call.
-     * @dataProvider providerCopyUntil
+     * @dataProvider provideCopyUntil
      */
     public function testCopyUntil($expected, $expectedPosition, $code, $currentPosition, $findString, $findResult) {
         $compressor = $this->getMock('ManiaScript\Compressor', array('find'));
@@ -265,9 +253,7 @@ class CompressorTest extends GetterSetterTestCase {
         $this->injectProperty($compressor, 'code', $code)
              ->injectProperty($compressor, 'currentPosition', $currentPosition);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'copyUntil');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor, $findString);
+        $this->invokeMethod($compressor, 'copyUntil', array($findString));
         $this->assertPropertyEquals($expected, $compressor, 'compressedCode');
         $this->assertPropertyEquals($expectedPosition, $compressor, 'currentPosition');
     }
@@ -276,7 +262,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the skipUntil test.
      * @return array The data.
      */
-    public function providerSkipUntil() {
+    public function provideSkipUntil() {
         return array(
             array(42, 42, ''),
             array(42, 36, 'abcdef')
@@ -288,7 +274,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param int $expected The expected position.
      * @param int $find The position returned by find().
      * @param string $string The string to use in find().
-     * @dataProvider providerSkipUntil
+     * @dataProvider provideSkipUntil
      */
     public function testSkipUntil($expected, $find, $string) {
         $compressor = $this->getMock('ManiaScript\Compressor', array('find'));
@@ -297,10 +283,7 @@ class CompressorTest extends GetterSetterTestCase {
                    ->with($string)
                    ->will($this->returnValue($find));
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'skipUntil');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor, $string);
-
+        $this->invokeMethod($compressor, 'skipUntil', array($string));
         $this->assertPropertyEquals($expected, $compressor, 'currentPosition');
     }
 
@@ -308,7 +291,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the skipWhitespace test.
      * @return array The data.
      */
-    public function providerSkipWhitespace() {
+    public function provideSkipWhitespace() {
         return array(
             array(1, ' ', 0),
             array(6, '      ', 0),
@@ -323,19 +306,15 @@ class CompressorTest extends GetterSetterTestCase {
      * @param int $expected The expected position.
      * @param string $code The code to be used.
      * @param int $currentPosition The current position.
-     * @dataProvider providerSkipWhitespace
+     * @dataProvider provideSkipWhitespace
      */
     public function testSkipWhitespace($expected, $code, $currentPosition) {
         $compressor = new Compressor();
-
         $this->injectProperty($compressor, 'code', $code)
              ->injectProperty($compressor, 'codeLength', strlen($code))
              ->injectProperty($compressor, 'currentPosition', $currentPosition);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'skipWhitespace');
-        $reflectedMethod->setAccessible(true);
-        $reflectedMethod->invoke($compressor);
-
+        $this->invokeMethod($compressor, 'skipWhitespace');
         $this->assertPropertyEquals($expected, $compressor, 'currentPosition');
     }
 
@@ -343,7 +322,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the find test.
      * @return array The data.
      */
-    public function providerFind() {
+    public function provideFind() {
         return array(
             array(0, 'abcdef', 'a', 0),
             array(6, 'abcdef', 'a', 1),
@@ -360,7 +339,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param string $code The code to be used.
      * @param string $string The char to find.
      * @param int $currentPosition The current position in the code.
-     * @dataProvider providerFind
+     * @dataProvider provideFind
      */
     public function testFind($expected, $code, $string, $currentPosition) {
         $compressor = new Compressor();
@@ -368,9 +347,7 @@ class CompressorTest extends GetterSetterTestCase {
              ->injectProperty($compressor, 'codeLength', strlen($code))
              ->injectProperty($compressor, 'currentPosition', $currentPosition);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'find');
-        $reflectedMethod->setAccessible(true);
-        $result = $reflectedMethod->invoke($compressor, $string);
+        $result = $this->invokeMethod($compressor, 'find', array($string));
         $this->assertEquals($expected, $result);
     }
 
@@ -378,7 +355,7 @@ class CompressorTest extends GetterSetterTestCase {
      * Data provider for the isWhitespaceRequired test.
      * @return array The data.
      */
-    public function providerIsWhitespaceRequired() {
+    public function provideIsWhitespaceRequired() {
         return array(
             array(true, 'b', 'a'),
             array(false, '', 'a'),
@@ -396,7 +373,7 @@ class CompressorTest extends GetterSetterTestCase {
      * @param boolean $expected The expected result.
      * @param string $code The code to be used.
      * @param string $compressedCode The compressed code.
-     * @dataProvider providerIsWhitespaceRequired
+     * @dataProvider provideIsWhitespaceRequired
      */
     public function testIsWhitespaceRequired($expected, $code, $compressedCode) {
         $compressor = new Compressor();
@@ -404,9 +381,7 @@ class CompressorTest extends GetterSetterTestCase {
              ->injectProperty($compressor, 'codeLength', strlen($code))
              ->injectProperty($compressor, 'compressedCode', $compressedCode);
 
-        $reflectedMethod = new ReflectionMethod($compressor, 'isWhitespaceRequired');
-        $reflectedMethod->setAccessible(true);
-        $result = $reflectedMethod->invoke($compressor);
+        $result = $this->invokeMethod($compressor, 'isWhitespaceRequired');
         $this->assertEquals($expected, $result);
     }
 }

@@ -3,7 +3,7 @@
 namespace ManiaScriptTests\Directive;
 
 use ManiaScript\Directive\Setting;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the Setting directive.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class SettingTest extends GetterSetterTestCase {
+class SettingTest extends TestCase {
     /**
      * Tests the setValue() method.
      */

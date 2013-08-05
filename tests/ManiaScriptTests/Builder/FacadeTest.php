@@ -4,8 +4,7 @@ namespace ManiaScriptTests\Builder;
 
 use ManiaScript\Builder\Facade;
 use ManiaScript\Builder;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
-use ReflectionProperty;
+use ManiaScriptTests\Assets\TestCase;
 use stdClass;
 
 /**
@@ -14,7 +13,7 @@ use stdClass;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class FacadeTest extends GetterSetterTestCase {
+class FacadeTest extends TestCase {
     /**
      * Tests generically one of the add*() methods.
      * @param string $method The name of the method to test.
@@ -68,9 +67,7 @@ class FacadeTest extends GetterSetterTestCase {
         if (is_object($expected)) {
             $this->assertPropertyEquals($expected, $facade, 'builder');
         } else {
-            $reflectedProperty = new ReflectionProperty($facade, 'builder');
-            $reflectedProperty->setAccessible(true);
-            $result = $reflectedProperty->getValue($facade);
+            $result = $this->extractProperty($facade, 'builder');
             $this->assertInstanceOf($expected, $result);
         }
     }
@@ -84,8 +81,8 @@ class FacadeTest extends GetterSetterTestCase {
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
         $builder = $this->getMock('ManiaScript\Builder', array('getOptions'));
         $builder->expects($this->once())
-            ->method('getOptions')
-            ->will($this->returnValue($options));
+                ->method('getOptions')
+                ->will($this->returnValue($options));
 
         $facade = new Facade($builder);
         $result = $facade->getOptions();

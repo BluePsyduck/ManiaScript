@@ -30,14 +30,11 @@ abstract class ControlHandler extends AbstractHandler {
         $this->inlineCode = '';
 
         if (!$this->events->isEmpty()) {
-
             $this->inlineCode .= '                case CMlEvent::Type::' . $this->getEventType() . ': {' . PHP_EOL;
-
             foreach ($this->events as $event) {
                 $this->globalCode .= $this->buildGlobalCodeOfEvent($event);
                 $this->inlineCode .= $this->buildInlineCodeOfEvent($event);
             }
-
             $this->inlineCode .= '                }' . PHP_EOL;
         }
         return $this;

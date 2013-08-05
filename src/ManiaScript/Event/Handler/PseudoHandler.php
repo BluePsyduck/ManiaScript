@@ -26,5 +26,6 @@ class PseudoHandler extends AbstractHandler {
                 $this->inlineCode .= $this->buildHandlerFunctionCall($event);
             }
         }
+        return $this;
     }
 }

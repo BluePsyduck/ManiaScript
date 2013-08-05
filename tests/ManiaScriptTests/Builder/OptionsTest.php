@@ -3,7 +3,7 @@
 namespace ManiaScriptTests\Builder;
 
 use ManiaScript\Builder\Options;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the Options class.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class OptionsTest extends GetterSetterTestCase {
+class OptionsTest extends TestCase {
     /**
      * Tests property initialization on class construction.
      */

@@ -3,7 +3,7 @@
 
 namespace ManiaScriptTests\Event;
 
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test of the KeyPress event.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class KeyPressTest extends GetterSetterTestCase {
+class KeyPressTest extends TestCase {
     /**
      * Data provider for the setKeyCodes() test.
      * @return array The data.

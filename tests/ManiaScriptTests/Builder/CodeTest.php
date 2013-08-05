@@ -3,7 +3,7 @@
 namespace ManiaScriptTests\Builder;
 
 use ManiaScript\Builder\Code;
-use ManiaScriptTests\Assets\GetterSetterTestCase;
+use ManiaScriptTests\Assets\TestCase;
 
 /**
  * The PHPUnit test for the Code class.
@@ -11,7 +11,7 @@ use ManiaScriptTests\Assets\GetterSetterTestCase;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class CodeTest extends GetterSetterTestCase {
+class CodeTest extends TestCase {
     /**
      * Tests the setCode() method.
      */
