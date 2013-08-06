@@ -21,17 +21,17 @@ class FacadeTest extends TestCase {
      * @param array $params The parameters to be passed.
      */
     protected function doTestAdd($method, $calledMethod, $params) {
-        $test = $this;
+        $testCase = $this;
 
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
         $builder = $this->getMock('ManiaScript\Builder', array($calledMethod));
         $builder->expects($this->once())
-            ->method($calledMethod)
-            ->will($this->returnCallback(function($object) use ($test, $params) {
-                foreach ($params as $name => $value) {
-                    $test->assertPropertyEquals($value, $object, $name);
-                }
-            }));
+                ->method($calledMethod)
+                ->will($this->returnCallback(function($object) use ($testCase, $params) {
+                    foreach ($params as $name => $value) {
+                        $testCase->assertPropertyEquals($value, $object, $name);
+                    }
+                }));
 
         $facade = new Facade($builder);
         $result = call_user_func_array(array($facade, $method), $params);

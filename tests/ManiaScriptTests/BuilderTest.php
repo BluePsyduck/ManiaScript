@@ -160,35 +160,183 @@ class BuilderTest extends TestCase {
      * Tests the prepareHandlers() method.
      */
     public function testPrepareHandlers() {
-        $this->markTestIncomplete('Test for prepareHandlers() not implemented.');
+        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('buildCode'));
+        $handler1->expects($this->once())
+                 ->method('buildCode');
+
+        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('buildCode'));
+        $handler2->expects($this->once())
+                 ->method('buildCode');
+
+        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllHandlers'));
+        $factory->expects($this->once())
+                ->method('getAllHandlers')
+                ->will($this->returnValue(array($handler1, $handler2)));
+
+        $builder = new Builder();
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
+        $result = $this->invokeMethod($builder, 'prepareHandlers');
+        $this->assertEquals($builder, $result);
     }
 
     /**
      * Tests the buildDirectives() method.
      */
     public function testBuildDirectives() {
-        $this->markTestIncomplete('Test for buildDirectives() not implemented.');
+        /* @var $directive1 \ManiaScript\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
+        $directive1 = $this->getMock('ManiaScript\Directive\Setting', array('buildCode'));
+        $directive1->expects($this->once())
+                   ->method('buildCode')
+                   ->will($this->returnValue('abc'));
+
+        /* @var $directive2 \ManiaScript\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
+        $directive2 = $this->getMock('ManiaScript\Directive\Setting', array('buildCode'));
+        $directive2->expects($this->once())
+                   ->method('buildCode')
+                   ->will($this->returnValue('def'));
+
+        $builder = new Builder();
+        $this->injectProperty($builder, 'directives', array($directive1, $directive2));
+
+        $result = $this->invokeMethod($builder, 'buildDirectives');
+        $this->assertEquals($builder, $result);
     }
 
     /**
      * Tests the buildGlobalCode() method.
      */
     public function testBuildGlobalCode() {
-        $this->markTestIncomplete('Test for buildGlobalCode() not implemented.');
+        /* @var $code1 \ManiaScript\Builder\Code|\PHPUnit_Framework_MockObject_MockObject */
+        $code1 = $this->getMock('ManiaScript\Builder\Code', array('getCode'));
+        $code1->expects($this->once())
+              ->method('getCode')
+              ->will($this->returnValue('abc'));
+
+        /* @var $code2 \ManiaScript\Builder\Code|\PHPUnit_Framework_MockObject_MockObject */
+        $code2 = $this->getMock('ManiaScript\Builder\Code', array('getCode'));
+        $code2->expects($this->once())
+              ->method('getCode')
+              ->will($this->returnValue('def'));
+
+        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getGlobalCode'));
+        $handler1->expects($this->once())
+                 ->method('getGlobalCode')
+                 ->will($this->returnValue('ghi'));
+
+        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getGlobalCode'));
+        $handler2->expects($this->once())
+                 ->method('getGlobalCode')
+                 ->will($this->returnValue('jkl'));
+
+        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllHandlers'));
+        $factory->expects($this->once())
+            ->method('getAllHandlers')
+            ->will($this->returnValue(array($handler1, $handler2)));
+
+        $builder = new Builder();
+        $this->injectProperty($builder, 'globalCodes', array($code1, $code2))
+             ->injectProperty($builder, 'eventHandlerFactory', $factory);
+
+        $result = $this->invokeMethod($builder, 'buildGlobalCode');
+        $this->assertEquals($builder, $result);
+
+        $code = $this->extractProperty($builder, 'code');
+        $this->assertContains('abc', $code);
+        $this->assertContains('def', $code);
+        $this->assertContains('ghi', $code);
+        $this->assertContains('jkl', $code);
     }
+
 
     /**
      * Tests the buildMainFunction() method.
      */
     public function testBuildMainFunction() {
-        $this->markTestIncomplete('Test for buildMainFunction() not implemented.');
+        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler1->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('abc'));
+
+        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler2->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('def'));
+
+        /* @var $handler3 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler3 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler3->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('ghi'));
+
+        /* @var $handler4 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler4 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler4->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('jkl'));
+
+        /* @var $handler5 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler5 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler5->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('mno'));
+
+        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllControlHandlers', 'getHandler'));
+        $factory->expects($this->any())
+                ->method('getHandler')
+                ->will($this->returnValueMap(array(
+                    array('Load', $handler1),
+                    array('FirstLoop', $handler2),
+                    array('Loop', $handler3)
+                )));
+        $factory->expects($this->once())
+                ->method('getAllControlHandlers')
+                ->will($this->returnValue(array($handler4, $handler5)));
+
+        $builder = new Builder();
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
+        $this->invokeMethod($builder, 'buildMainFunction');
+        $code = $this->extractProperty($builder, 'code');
+        $this->assertContains('abc', $code);
+        $this->assertContains('def', $code);
+        $this->assertContains('ghi', $code);
+        $this->assertContains('jkl', $code);
+        $this->assertContains('mno', $code);
+    }
+
+    /**
+     * Provides the data for the compress() test.
+     * @return array The data.
+     */
+    public function provideCompress() {
+        return array(
+            array(' abc ', ' abc ', false),
+            array('abc', ' abc ', true)
+        );
     }
 
     /**
      * Tests the compress() method.
+     * @param string $expected The expected code.
+     * @param string $code The code to be set.
+     * @param boolean $optionCompress The compress option.
+     * @dataProvider provideCompress
      */
-    public function testCompress() {
-        $this->markTestIncomplete('Test for compress() not implemented.');
+    public function testCompress($expected, $code, $optionCompress) {
+        $builder = new Builder();
+        $builder->getOptions()->setCompress($optionCompress);
+        $this->injectProperty($builder, 'code', $code);
+        $result = $this->invokeMethod($builder, 'compress');
+        $this->assertEquals($builder, $result);
+        $this->assertPropertyEquals($expected, $builder, 'code');
     }
 
     /**
@@ -205,18 +353,15 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the addScriptTag() method.
-     * @param string The expected code.
+     * @param string $expected The expected code.
      * @param string $code The code to be set.
      * @param boolean $optionIncludeTag The include tag option.
      * @dataProvider provideAddScriptTag
      */
     public function testAddScriptTag($expected, $code, $optionIncludeTag) {
-        $options = new Options();
-        $options->setIncludeScriptTag($optionIncludeTag);
-
         $builder = new Builder();
-        $this->injectProperty($builder, 'options', $options)
-             ->injectProperty($builder, 'code', $code);
+        $builder->getOptions()->setIncludeScriptTag($optionIncludeTag);
+        $this->injectProperty($builder, 'code', $code);
 
         $result = $this->invokeMethod($builder, 'addScriptTag');
         $this->assertPropertyEquals($expected, $builder, 'code');

@@ -3,6 +3,7 @@
 namespace ManiaScriptTests\Event\Handler;
 
 use ManiaScript\Builder\PriorityQueue;
+use ManiaScript\Event\MouseClick;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;
 
@@ -142,10 +143,57 @@ class ControlHandlerTest extends TestCase {
     }
 
     /**
-     * Tests the buildInlineCodeOfEvent() method.
+     * Provides the data for the buildInlineCodeOfEvent() test.
+     * @return array The data.
      */
-    public function testBuildInlineCodeOfEvent() {
-        $this->markTestIncomplete('Test for buildInlineCodeOfEvent() not implemented.');
+    public function provideBuildInlineCodeOfEvent() {
+        $event1 = new MouseClick();
+        $event1->setCode('abc')
+               ->setInline(true);
+        $event2 = new MouseClick();
+        return array(
+            array('abc', $event1, null, 'def'),
+            array('abc', $event2, 'abc', '')
+        );
+    }
+
+    /**
+     * Tests the buildInlineCodeOfEvent() method.
+     * @param string $expected The expected code.
+     * @param \ManiaScript\Event\AbstractEvent $event The event to be used.
+     * @param string $functionCall The result of the build function call.
+     * @param string $condition The condition.
+     * @dataProvider provideBuildInlineCodeOfEvent
+     */
+    public function testBuildInlineCodeOfEvent($expected, $event, $functionCall, $condition) {
+        /* @var $handler \ManiaScript\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockForAbstractClass(
+            'ManiaScript\Event\Handler\ControlHandler',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('buildCondition', 'buildHandlerFunctionCall')
+        );
+        $handler->expects($this->once())
+                ->method('buildCondition')
+                ->with($event)
+                ->will($this->returnValue($condition));
+        if (is_null($functionCall)) {
+            $handler->expects($this->never())
+                    ->method('buildHandlerFunctionCall');
+        } else {
+            $handler->expects($this->once())
+                    ->method('buildHandlerFunctionCall')
+                    ->with($event)
+                    ->will($this->returnValue($functionCall));
+        }
+        $result = $this->invokeMethod($handler, 'buildInlineCodeOfEvent', array($event));
+        if (!empty($condition)) {
+            $this->assertContains($condition, $result);
+        }
+        $this->assertContains($expected, $result);
     }
 
     /**

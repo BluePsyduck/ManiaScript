@@ -117,4 +117,54 @@ class AbstractHandlerTest extends TestCase {
         $this->assertPropertyEquals($expectedArray, $handler, 'handlerFunctionNames');
         $this->assertEquals($expectedName, $result);
     }
+
+    /**
+     * Tests the buildHandlerFunction() method.
+     */
+    public function testBuildHandlerFunction() {
+        $event = new Event();
+        $event->setCode('abc');
+
+        /* @var $handler \ManiaScript\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockForAbstractClass(
+            'ManiaScript\Event\Handler\AbstractHandler',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('getHandlerFunctionName')
+        );
+        $handler->expects($this->once())
+            ->method('getHandlerFunctionName')
+            ->with($event)
+            ->will($this->returnValue('def'));
+
+        $result = $this->invokeMethod($handler, 'buildHandlerFunction', array($event));
+        $this->assertContains('Void def(CMlEvent Event)', $result);
+        $this->assertContains('abc', $result);
+    }
+
+    /**
+     * Tests the buildHandlerFunctionCall() method.
+     */
+    public function testBuildHandlerFunctionCall() {
+        $event = new Event();
+        /* @var $handler \ManiaScript\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockForAbstractClass(
+            'ManiaScript\Event\Handler\AbstractHandler',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('getHandlerFunctionName')
+        );
+        $handler->expects($this->once())
+                ->method('getHandlerFunctionName')
+                ->with($event)
+                ->will($this->returnValue('abc'));
+        $result = $this->invokeMethod($handler, 'buildHandlerFunctionCall', array($event));
+        $this->assertEquals('abc();' . PHP_EOL, $result);
+    }
 }
