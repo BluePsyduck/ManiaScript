@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Directive;
+namespace ManiaScript\Builder\Directive;
 
 /**
  * The Setting directive generates a #Setting line in the ManiaScript.
@@ -18,7 +18,7 @@ class Setting extends AbstractDirective {
     /**
      * Sets the value of the directive.
      * @param string $value The value
-     * @return \ManiaScript\Directive\Setting Implementing fluent interface.
+     * @return \ManiaScript\Builder\Directive\Setting Implementing fluent interface.
      */
     public function setValue($value) {
         $this->value = $value;

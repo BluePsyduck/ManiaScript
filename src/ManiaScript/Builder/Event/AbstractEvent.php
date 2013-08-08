@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event;
+namespace ManiaScript\Builder\Event;
 
 use ManiaScript\Builder\PriorityQueueItem;
 
@@ -32,7 +32,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
     /**
      * Sets the code to be executed when triggering the event.
      * @param string $code The code.
-     * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\AbstractEvent Implementing fluent interface.
      */
     public function setCode($code) {
         $this->code = trim($code);
@@ -50,7 +50,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
     /**
      * Sets the priority of the event. 0 for most important, greater for less important.
      * @param int $priority The priority.
-     * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\AbstractEvent Implementing fluent interface.
      */
     public function setPriority($priority) {
         $this->priority = max(intval($priority), 0);
@@ -68,7 +68,7 @@ abstract class AbstractEvent implements PriorityQueueItem {
     /**
      * Sets whether this event is handled inline, i.e. without wrapping function.
      * @param boolean $inline The inline state.
-     * @return \ManiaScript\Event\AbstractEvent Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\AbstractEvent Implementing fluent interface.
      */
     public function setInline($inline) {
         $this->inline = (bool) $inline;

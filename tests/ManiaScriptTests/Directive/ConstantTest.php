@@ -2,7 +2,7 @@
 
 namespace ManiaScriptTests\Directive;
 
-use ManiaScript\Directive\Constant;
+use ManiaScript\Builder\Directive\Constant;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
@@ -37,8 +37,8 @@ class ConstantTest extends TestCase {
      * Tests the buildCode() method.
      */
     public function testBuildCode() {
-        /* @var $directive \ManiaScript\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Directive\Constant', array('getName', 'getValue'));
+        /* @var $directive \ManiaScript\Builder\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMock('ManiaScript\Builder\Directive\Constant', array('getName', 'getValue'));
         $directive->expects($this->any())
                   ->method('getName')
                   ->will($this->returnValue('abc'));

@@ -2,7 +2,7 @@
 
 namespace ManiaScriptTests\Directive;
 
-use ManiaScript\Directive\Library;
+use ManiaScript\Builder\Directive\Library;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
@@ -52,8 +52,8 @@ class LibraryTest extends TestCase {
      * @dataProvider providerGetCode
      */
     public function testGetCode($expected, $name, $alias) {
-        /* @var $directive \ManiaScript\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Directive\Library', array('getName', 'getAlias'));
+        /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMock('ManiaScript\Builder\Directive\Library', array('getName', 'getAlias'));
         $directive->expects($this->any())
                   ->method('getName')
                   ->will($this->returnValue($name));

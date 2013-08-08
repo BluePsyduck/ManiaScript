@@ -16,7 +16,7 @@ class AbstractDirectiveTest extends TestCase {
      */
     public function testSetName() {
         $expected = 'abc';
-        $directive = $this->getMockForAbstractClass('ManiaScript\Directive\AbstractDirective');
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
         $result = $directive->setName($expected);
         $this->assertPropertyEquals($expected, $directive, 'name');
         $this->assertEquals($directive, $result);
@@ -27,7 +27,7 @@ class AbstractDirectiveTest extends TestCase {
      */
     public function testGetName() {
         $expected = 'abc';
-        $directive = $this->getMockForAbstractClass('ManiaScript\Directive\AbstractDirective');
+        $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
         $this->injectProperty($directive, 'name', $expected);
         $this->assertEquals($expected, $directive->getName());
     }

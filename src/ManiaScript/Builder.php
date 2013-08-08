@@ -4,10 +4,10 @@ namespace ManiaScript;
 
 use ManiaScript\Builder\Code;
 use ManiaScript\Builder\PriorityQueue;
-use ManiaScript\Event\AbstractEvent;
+use ManiaScript\Builder\Event\AbstractEvent;
 use ManiaScript\Builder\Options;
-use ManiaScript\Directive\AbstractDirective;
-use ManiaScript\Event\Handler\Factory;
+use ManiaScript\Builder\Directive\AbstractDirective;
+use ManiaScript\Builder\Event\Handler\Factory;
 
 class Builder {
 
@@ -25,7 +25,7 @@ class Builder {
 
     /**
      * The event handler factory.
-     * @var \ManiaScript\Event\Handler\Factory
+     * @var \ManiaScript\Builder\Event\Handler\Factory
      */
     protected $eventHandlerFactory;
 
@@ -60,7 +60,7 @@ class Builder {
 
     /**
      * Adds a directive to the ManiaScript.
-     * @param \ManiaScript\Directive\AbstractDirective $directive The directive.
+     * @param \ManiaScript\Builder\Directive\AbstractDirective $directive The directive.
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
     public function addDirective(AbstractDirective $directive) {
@@ -80,7 +80,7 @@ class Builder {
 
     /**
      * Adds an event to the builder.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
      * @return \ManiaScript\Builder Implementing fluent interface.
      */
     public function addEvent(AbstractEvent $event) {
@@ -118,7 +118,7 @@ class Builder {
      */
     protected function prepareHandlers() {
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
-            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
             $handler->buildCode();
         }
         return $this;
@@ -130,7 +130,7 @@ class Builder {
      */
     protected function buildDirectives() {
         foreach ($this->directives as $directive) {
-            /* @var $directive \ManiaScript\Directive\AbstractDirective */
+            /* @var $directive \ManiaScript\Builder\Directive\AbstractDirective */
             $this->code .= $directive->buildCode();
         }
         return $this;
@@ -146,7 +146,7 @@ class Builder {
             $this->code .= $code->getCode() . PHP_EOL;
         }
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
-            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
             $this->code .= $handler->getGlobalCode();
         }
         return $this;
@@ -167,7 +167,7 @@ class Builder {
                      . '            switch (Event.Type) {' . PHP_EOL;
 
         foreach ($this->eventHandlerFactory->getAllControlHandlers() as $handler) {
-            /* @var $handler \ManiaScript\Event\Handler\AbstractHandler */
+            /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
             $this->code .= $handler->getInlineCode();
         }
 

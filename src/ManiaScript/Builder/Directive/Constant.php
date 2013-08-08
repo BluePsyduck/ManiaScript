@@ -1,8 +1,8 @@
 <?php
 
-namespace ManiaScript\Directive;
+namespace ManiaScript\Builder\Directive;
 
-use ManiaScript\Directive\AbstractDirective;
+use ManiaScript\Builder\Directive\AbstractDirective;
 
 /**
  * The Constant directive generates a #Const line in the ManiaScript.
@@ -20,7 +20,7 @@ class Constant extends AbstractDirective {
     /**
      * Sets the value of the directive.
      * @param string $value The value
-     * @return \ManiaScript\Directive\Constant Implementing fluent interface.
+     * @return \ManiaScript\Builder\Directive\Constant Implementing fluent interface.
      */
     public function setValue($value) {
         $this->value = $value;

@@ -1,9 +1,9 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
 use ManiaScript\Builder\PriorityQueue;
-use ManiaScript\Event\AbstractEvent;
+use ManiaScript\Builder\Event\AbstractEvent;
 
 /**
  * The abstract base class of all event handlers.
@@ -45,8 +45,8 @@ abstract class AbstractHandler {
 
     /**
      * Adds a new event ot the handler.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
      */
     public function addEvent(AbstractEvent $event) {
         $this->events->add($event);
@@ -55,7 +55,7 @@ abstract class AbstractHandler {
 
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
      */
     public abstract function buildCode();
 
@@ -77,7 +77,7 @@ abstract class AbstractHandler {
 
     /**
      * Returns the name of the handler function to be used for the specified event.
-     * @param \ManiaScript\Event\AbstractEvent The event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent The event.
      * @return string The handler function name.
      */
     protected function getHandlerFunctionName(AbstractEvent $event) {
@@ -93,7 +93,7 @@ abstract class AbstractHandler {
 
     /**
      * Builds the handler function of the event.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
      * @return string THe handler function.
      */
     protected function buildHandlerFunction($event) {
@@ -104,7 +104,7 @@ abstract class AbstractHandler {
 
     /**
      * Builds the call of the handler function of the event.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
      * @return string The handler function call.
      */
     protected function buildHandlerFunctionCall($event) {

@@ -27,9 +27,9 @@ class PseudoHandlerTest extends TestCase {
         $queue->add($event1)
               ->add($event2);
 
-        /* @var $handler \ManiaScript\Event\Handler\PseudoHandler|\PHPUnit_Framework_MockObject_MockObject */
+        /* @var $handler \ManiaScript\Builder\Event\Handler\PseudoHandler|\PHPUnit_Framework_MockObject_MockObject */
         $handler = $this->getMock(
-            'ManiaScript\Event\Handler\PseudoHandler',
+            'ManiaScript\Builder\Event\Handler\PseudoHandler',
             array('buildHandlerFunction', 'buildHandlerFunctionCall')
         );
         $handler->expects($this->once())

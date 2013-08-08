@@ -5,9 +5,9 @@ namespace ManiaScriptTests;
 use ManiaScript\Builder;
 use ManiaScript\Builder\Code;
 use ManiaScript\Builder\Options;
-use ManiaScript\Directive\Constant;
-use ManiaScript\Directive\Library;
-use ManiaScript\Directive\Setting;
+use ManiaScript\Builder\Directive\Constant;
+use ManiaScript\Builder\Directive\Library;
+use ManiaScript\Builder\Directive\Setting;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;
 
@@ -76,7 +76,7 @@ class BuilderTest extends TestCase {
     /**
      * Tests the addDirective() method.
      * @param array $expected The expected directives of the builder.
-     * @param \ManiaScript\Directive\AbstractDirective $newDirective The directive to be added.
+     * @param \ManiaScript\Builder\Directive\AbstractDirective $newDirective The directive to be added.
      * @param array $directives The directives before adding the new one.
      * @dataProvider providerAddDirective
      */
@@ -160,18 +160,18 @@ class BuilderTest extends TestCase {
      * Tests the prepareHandlers() method.
      */
     public function testPrepareHandlers() {
-        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('buildCode'));
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('buildCode'));
         $handler1->expects($this->once())
                  ->method('buildCode');
 
-        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('buildCode'));
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('buildCode'));
         $handler2->expects($this->once())
                  ->method('buildCode');
 
-        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllHandlers'));
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllHandlers'));
         $factory->expects($this->once())
                 ->method('getAllHandlers')
                 ->will($this->returnValue(array($handler1, $handler2)));
@@ -186,14 +186,14 @@ class BuilderTest extends TestCase {
      * Tests the buildDirectives() method.
      */
     public function testBuildDirectives() {
-        /* @var $directive1 \ManiaScript\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
-        $directive1 = $this->getMock('ManiaScript\Directive\Setting', array('buildCode'));
+        /* @var $directive1 \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
+        $directive1 = $this->getMock('ManiaScript\Builder\Directive\Setting', array('buildCode'));
         $directive1->expects($this->once())
                    ->method('buildCode')
                    ->will($this->returnValue('abc'));
 
-        /* @var $directive2 \ManiaScript\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
-        $directive2 = $this->getMock('ManiaScript\Directive\Setting', array('buildCode'));
+        /* @var $directive2 \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
+        $directive2 = $this->getMock('ManiaScript\Builder\Directive\Setting', array('buildCode'));
         $directive2->expects($this->once())
                    ->method('buildCode')
                    ->will($this->returnValue('def'));
@@ -221,20 +221,20 @@ class BuilderTest extends TestCase {
               ->method('getCode')
               ->will($this->returnValue('def'));
 
-        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getGlobalCode'));
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getGlobalCode'));
         $handler1->expects($this->once())
                  ->method('getGlobalCode')
                  ->will($this->returnValue('ghi'));
 
-        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getGlobalCode'));
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getGlobalCode'));
         $handler2->expects($this->once())
                  ->method('getGlobalCode')
                  ->will($this->returnValue('jkl'));
 
-        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllHandlers'));
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllHandlers'));
         $factory->expects($this->once())
             ->method('getAllHandlers')
             ->will($this->returnValue(array($handler1, $handler2)));
@@ -258,38 +258,38 @@ class BuilderTest extends TestCase {
      * Tests the buildMainFunction() method.
      */
     public function testBuildMainFunction() {
-        /* @var $handler1 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
         $handler1->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('abc'));
 
-        /* @var $handler2 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
         $handler2->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('def'));
 
-        /* @var $handler3 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler3 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler3 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler3 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
         $handler3->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('ghi'));
 
-        /* @var $handler4 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler4 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler4 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler4 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
         $handler4->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('jkl'));
 
-        /* @var $handler5 \ManiaScript\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler5 = $this->getMock('ManiaScript\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler5 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler5 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
         $handler5->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('mno'));
 
-        /* @var $handler \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getAllControlHandlers', 'getHandler'));
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllControlHandlers', 'getHandler'));
         $factory->expects($this->any())
                 ->method('getHandler')
                 ->will($this->returnValueMap(array(

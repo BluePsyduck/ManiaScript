@@ -32,8 +32,8 @@ class KeyPressTest extends TestCase {
      * @dataProvider providerSetKeyCodes
      */
     public function testSetKeyCodes($expected, $keyCodes) {
-        /* @var $event \ManiaScript\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\KeyPress');
+        /* @var $event \ManiaScript\Builder\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\KeyPress');
         $result = $event->setKeyCodes($keyCodes);
         $this->assertPropertyEquals($expected, $event, 'keyCodes');
         $this->assertEquals($event, $result);
@@ -44,8 +44,8 @@ class KeyPressTest extends TestCase {
      */
     public function testGetKeyCodes() {
         $expected = array('abc');
-        /* @var $event \ManiaScript\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\KeyPress');
+        /* @var $event \ManiaScript\Builder\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\KeyPress');
         $this->injectProperty($event, 'keyCodes', $expected);
         $this->assertEquals($expected, $event->getKeyCodes());
     }

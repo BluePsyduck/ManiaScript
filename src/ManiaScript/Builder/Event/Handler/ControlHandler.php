@@ -1,9 +1,9 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
-use ManiaScript\Event\AbstractEvent;
-use ManiaScript\Event\ControlEvent;
+use ManiaScript\Builder\Event\AbstractEvent;
+use ManiaScript\Builder\Event\ControlEvent;
 
 /**
  * An extension of the basic event handler for all control based events.
@@ -23,7 +23,7 @@ abstract class ControlHandler extends AbstractHandler {
 
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
      */
     public function buildCode() {
         $this->globalCode = '';
@@ -42,7 +42,7 @@ abstract class ControlHandler extends AbstractHandler {
 
     /**
      * Builds the global code of a concrete event.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
      * @return string The built global code.
      */
     protected function buildGlobalCodeOfEvent(AbstractEvent $event) {
@@ -55,8 +55,8 @@ abstract class ControlHandler extends AbstractHandler {
 
     /**
      * Builds the inline code of a concrete event.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Event\Handler\ControlHandler Implementing fluent interface.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
+     * @return \ManiaScript\Builder\Event\Handler\ControlHandler Implementing fluent interface.
      */
     protected function buildInlineCodeOfEvent(AbstractEvent $event) {
         if ($event->getInline()) {
@@ -77,7 +77,7 @@ abstract class ControlHandler extends AbstractHandler {
 
     /**
      * Builds the condition to be used for the specified event.
-     * @param \ManiaScript\Event\ControlEvent $event The event.
+     * @param \ManiaScript\Builder\Event\ControlEvent $event The event.
      * @return string The condition.
      */
     protected function buildCondition($event) {

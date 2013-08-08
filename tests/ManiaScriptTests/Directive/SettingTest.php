@@ -2,7 +2,7 @@
 
 namespace ManiaScriptTests\Directive;
 
-use ManiaScript\Directive\Setting;
+use ManiaScript\Builder\Directive\Setting;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
@@ -37,8 +37,8 @@ class SettingTest extends TestCase {
      * Tests the getCode() method.
      */
     public function testGetCode() {
-        /* @var $directive \ManiaScript\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Directive\Setting', array('getName', 'getValue'));
+        /* @var $directive \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMock('ManiaScript\Builder\Directive\Setting', array('getName', 'getValue'));
         $directive->expects($this->any())
             ->method('getName')
             ->will($this->returnValue('abc'));

@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
 /**
  * The handler for EntrySubmit events.

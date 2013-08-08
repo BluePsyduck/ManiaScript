@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Directive;
+namespace ManiaScript\Builder\Directive;
 
 /**
  * The Library directive generates a #Include line in the ManiaScript.

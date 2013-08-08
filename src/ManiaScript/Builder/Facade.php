@@ -3,17 +3,17 @@
 namespace ManiaScript\Builder;
 
 use ManiaScript\Builder;
-use ManiaScript\Directive\Constant;
-use ManiaScript\Directive\Library;
-use ManiaScript\Directive\Setting;
-use ManiaScript\Event\EntrySubmit;
-use ManiaScript\Event\FirstLoop;
-use ManiaScript\Event\KeyPress;
-use ManiaScript\Event\Load;
-use ManiaScript\Event\Loop;
-use ManiaScript\Event\MouseClick;
-use ManiaScript\Event\MouseOut;
-use ManiaScript\Event\MouseOver;
+use ManiaScript\Builder\Directive\Constant;
+use ManiaScript\Builder\Directive\Library;
+use ManiaScript\Builder\Directive\Setting;
+use ManiaScript\Builder\Event\EntrySubmit;
+use ManiaScript\Builder\Event\FirstLoop;
+use ManiaScript\Builder\Event\KeyPress;
+use ManiaScript\Builder\Event\Load;
+use ManiaScript\Builder\Event\Loop;
+use ManiaScript\Builder\Event\MouseClick;
+use ManiaScript\Builder\Event\MouseOut;
+use ManiaScript\Builder\Event\MouseOver;
 
 /**
  * A facade for the actual builder to simplify adding new content, if desired.

@@ -2,7 +2,7 @@
 
 namespace ManiaScriptTests\Assets;
 
-use ManiaScript\Event\ControlEvent;
+use ManiaScript\Builder\Event\ControlEvent;
 
 /**
  * An event implementing the AbstractEvent class.

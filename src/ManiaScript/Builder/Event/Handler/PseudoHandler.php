@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
 /**
  * A generic handler for all pseudo events.
@@ -11,14 +11,14 @@ namespace ManiaScript\Event\Handler;
 class PseudoHandler extends AbstractHandler {
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
      */
     public function buildCode() {
         $this->globalCode = '';
         $this->inlineCode = '';
 
         foreach ($this->events as $event) {
-            /* @var $event \ManiaScript\Event\AbstractEvent */
+            /* @var $event \ManiaScript\Builder\Event\AbstractEvent */
             if ($event->getInline()) {
                 $this->inlineCode .= $event->getCode() . PHP_EOL;
             } else {

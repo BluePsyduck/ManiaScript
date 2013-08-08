@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event;
+namespace ManiaScript\Builder\Event;
 
 /**
  * This class represents a EntrySubmit event of ManiaScript.

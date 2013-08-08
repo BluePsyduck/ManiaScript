@@ -2,9 +2,9 @@
 
 namespace ManiaScriptTests\Event\Handler;
 
-use ManiaScript\Event\Handler\Factory;
-use ManiaScript\Event\Handler\MouseClick as MouseClickHandler;
-use ManiaScript\Event\MouseClick as MouseClickEvent;
+use ManiaScript\Builder\Event\Handler\Factory;
+use ManiaScript\Builder\Event\Handler\MouseClick as MouseClickHandler;
+use ManiaScript\Builder\Event\MouseClick as MouseClickEvent;
 use ManiaScriptTests\Assets\TestCase;
 use stdClass;
 
@@ -22,19 +22,19 @@ class FactoryTest extends TestCase {
     public function provideGetHandler() {
         return array(
             array(
-                'ManiaScript\Event\Handler\MouseClick',
+                'ManiaScript\Builder\Event\Handler\MouseClick',
                 1,
                 array(),
                 'MouseClick'
             ),
             array(
-                'ManiaScript\Event\Handler\MouseClick',
+                'ManiaScript\Builder\Event\Handler\MouseClick',
                 1,
                 array('MouseClick' => new MouseClickHandler()),
                 'MouseClick'
             ),
             array(
-                'ManiaScript\Event\Handler\MouseOver',
+                'ManiaScript\Builder\Event\Handler\MouseOver',
                 2,
                 array('MouseClick' => new MouseClickHandler()),
                 'MouseOver'
@@ -65,8 +65,8 @@ class FactoryTest extends TestCase {
     public function testGetHandlerForEvent() {
         $handler = new MouseClickHandler();
 
-        /* @var $factory \ManiaScript\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Event\Handler\Factory', array('getHandler'));
+        /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
         $factory->expects($this->once())
                 ->method('getHandler')
                 ->with('MouseClick')

@@ -17,7 +17,7 @@ class EventTest extends TestCase {
      */
     public function testSetCode() {
         $expected = 'abc';
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $result = $event->setCode($expected);
         $this->assertPropertyEquals($expected, $event, 'code');
         $this->assertEquals($event, $result);
@@ -28,7 +28,7 @@ class EventTest extends TestCase {
      */
     public function testGetCode() {
         $expected = 'abc';
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $this->injectProperty($event, 'code', $expected);
         $this->assertEquals($expected, $event->getCode());
     }
@@ -52,7 +52,7 @@ class EventTest extends TestCase {
      * @dataProvider providerSetCode
      */
     public function testSetPriority($expected, $priority) {
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $result = $event->setPriority($priority);
         $this->assertPropertyEquals($expected, $event, 'priority');
         $this->assertEquals($event, $result);
@@ -63,7 +63,7 @@ class EventTest extends TestCase {
      */
     public function testGetPriority() {
         $expected = 42;
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $this->injectProperty($event, 'priority', $expected);
         $this->assertEquals($expected, $event->getPriority());
     }
@@ -73,7 +73,7 @@ class EventTest extends TestCase {
      */
     public function testSetInline() {
         $expected = true;
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $result = $event->setInline($expected);
         $this->assertPropertyEquals($expected, $event, 'inline');
         $this->assertEquals($event, $result);
@@ -84,7 +84,7 @@ class EventTest extends TestCase {
      */
     public function testGetInline() {
         $expected = true;
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\AbstractEvent');
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\AbstractEvent');
         $this->injectProperty($event, 'inline', $expected);
         $this->assertEquals($expected, $event->getInline());
     }

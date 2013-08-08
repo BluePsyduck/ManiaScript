@@ -1,8 +1,8 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
-use ManiaScript\Event\KeyPress as KeyPressEvent;
+use ManiaScript\Builder\Event\KeyPress as KeyPressEvent;
 
 /**
  * The handler for KeyPress events.
@@ -13,7 +13,7 @@ use ManiaScript\Event\KeyPress as KeyPressEvent;
 class KeyPress extends ControlHandler {
     /**
      * Builds the condition to be used for the specified event.
-     * @param \ManiaScript\Event\KeyPress $event The event.
+     * @param \ManiaScript\Builder\Event\KeyPress $event The event.
      * @return string The condition.
      */
     protected function buildCondition($event) {

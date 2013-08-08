@@ -32,8 +32,8 @@ class ControlEventTest extends TestCase {
      * @dataProvider providerSetControlIds
      */
     public function testSetControlIds($expected, $controlIds) {
-        /* @var $event \ManiaScript\Event\ControlEvent|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\ControlEvent');
+        /* @var $event \ManiaScript\Builder\Event\ControlEvent|\PHPUnit_Framework_MockObject_MockObject */
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\ControlEvent');
         $result = $event->setControlIds($controlIds);
         $this->assertPropertyEquals($expected, $event, 'controlIds');
         $this->assertEquals($event, $result);
@@ -44,8 +44,8 @@ class ControlEventTest extends TestCase {
      */
     public function testGetControlIds() {
         $expected = array('abc');
-        /* @var $event \ManiaScript\Event\ControlEvent|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Event\ControlEvent');
+        /* @var $event \ManiaScript\Builder\Event\ControlEvent|\PHPUnit_Framework_MockObject_MockObject */
+        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\ControlEvent');
         $this->injectProperty($event, 'controlIds', $expected);
         $this->assertEquals($expected, $event->getControlIds());
     }

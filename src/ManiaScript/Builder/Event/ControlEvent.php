@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event;
+namespace ManiaScript\Builder\Event;
 
 /**
  * The base class of all events, which get triggered by a concrete control of the ManiaLink.

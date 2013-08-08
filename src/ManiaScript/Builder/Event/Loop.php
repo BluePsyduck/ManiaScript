@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScript\Event;
+namespace ManiaScript\Builder\Event;
 
 /**
  * This class represents the Loop pseudo event.

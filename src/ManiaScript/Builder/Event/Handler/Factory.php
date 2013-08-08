@@ -1,8 +1,8 @@
 <?php
 
-namespace ManiaScript\Event\Handler;
+namespace ManiaScript\Builder\Event\Handler;
 
-use ManiaScript\Event\AbstractEvent;
+use ManiaScript\Builder\Event\AbstractEvent;
 
 /**
  * A factory managing the event handlers.
@@ -20,7 +20,7 @@ class Factory {
     /**
      * Returns the handler of the specified name.
      * @param string $name The handler name.
-     * @return \ManiaScript\Event\Handler\AbstractHandler The handler.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler The handler.
      */
     public function getHandler($name) {
         if (!isset($this->instances[$name])) {
@@ -32,8 +32,8 @@ class Factory {
 
     /**
      * Returns the event handler responsible for the specified event.
-     * @param \ManiaScript\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Event\Handler\AbstractHandler The event handler.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
+     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler The event handler.
      */
     public function getHandlerForEvent(AbstractEvent $event) {
         $parts = explode('\\', get_class($event));

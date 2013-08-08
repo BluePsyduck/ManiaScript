@@ -2,8 +2,8 @@
 
 namespace ManiaScriptTests\Event\Handler;
 
-use ManiaScript\Event\KeyPress as KeyPressEvent;
-use ManiaScript\Event\Handler\KeyPress as KeyPressHandler;
+use ManiaScript\Builder\Event\KeyPress as KeyPressEvent;
+use ManiaScript\Builder\Event\Handler\KeyPress as KeyPressHandler;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
