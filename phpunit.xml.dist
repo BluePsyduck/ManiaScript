@@ -1,12 +1,12 @@
 <phpunit colors="true">
     <testsuites>
         <testsuite name="ManiaScript">
-            <directory>tests</directory>
+            <directory>tests/ManiaScripttests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">src/ManiaScript</directory>
             <exclude>
                 <directory suffix=".php">vendor</directory>
                 <directory suffix=".php">tests/Assets</directory>
