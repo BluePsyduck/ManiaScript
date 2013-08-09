@@ -9,6 +9,12 @@ use ManiaScript\Builder\Options;
 use ManiaScript\Builder\Directive\AbstractDirective;
 use ManiaScript\Builder\Event\Handler\Factory;
 
+/**
+ * The main Builder class for ManiaScript.
+ *
+ * @author Marcel <marcel@mania-community.de>
+ * @license http://opensource.org/licenses/GPL-2.0 GPL v2
+ */
 class Builder {
 
     /**
