@@ -1,7 +1,6 @@
 {
-    "name": "BluePsyduck/ManiaScript",
-    "description": "Test",
-    "version": "0.0.1",
+    "name": "bluepsyduck/maniascript",
+    "description": "Lib helping you with building up the ManiaScript of a ManiaLink.",
     "type": "library",
     "keywords": ["ManiaScript", "Maniaplanet"],
     "license": "GPL-2.0",
