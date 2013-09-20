@@ -96,7 +96,8 @@ class CompressorTest extends TestCase {
         }
 
         $this->injectProperty($compressor, 'code', $code)
-             ->injectProperty($compressor, 'codeLength', strlen($code));
+             ->injectProperty($compressor, 'codeLength', strlen($code))
+             ->injectProperty($compressor, 'currentPosition', 0);
 
         $this->invokeMethod($compressor, 'read');
         $this->assertPropertyEquals(1, $compressor, 'currentPosition');
@@ -379,7 +380,8 @@ class CompressorTest extends TestCase {
         $compressor = new Compressor();
         $this->injectProperty($compressor, 'code', $code)
              ->injectProperty($compressor, 'codeLength', strlen($code))
-             ->injectProperty($compressor, 'compressedCode', $compressedCode);
+             ->injectProperty($compressor, 'compressedCode', $compressedCode)
+             ->injectProperty($compressor, 'currentPosition', 0);
 
         $result = $this->invokeMethod($compressor, 'isWhitespaceRequired');
         $this->assertEquals($expected, $result);
