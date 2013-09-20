@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScriptTests\Event;
+namespace ManiaScriptTests\Builder\Event;
 
 use ManiaScript\AbstractEvent;
 use ManiaScriptTests\Assets\TestCase;

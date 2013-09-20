@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScriptTests\Event\Handler;
+namespace ManiaScriptTests\Builder\Event\Handler;
 
 use ManiaScript\Builder\Event\KeyPress as KeyPressEvent;
 use ManiaScript\Builder\Event\Handler\KeyPress as KeyPressHandler;

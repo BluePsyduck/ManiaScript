@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScriptTests\Event\Handler;
+namespace ManiaScriptTests\Builder\Event\Handler;
 
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScriptTests\Event\Handler;
+namespace ManiaScriptTests\Builder\Event\Handler;
 
 use ManiaScript\Builder\PriorityQueue;
 use ManiaScriptTests\Assets\Event;

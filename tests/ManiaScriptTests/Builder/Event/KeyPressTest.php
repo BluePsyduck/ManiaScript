@@ -1,7 +1,7 @@
 <?php
 
 
-namespace ManiaScriptTests\Event;
+namespace ManiaScriptTests\Builder\Event;
 
 use ManiaScriptTests\Assets\TestCase;
 

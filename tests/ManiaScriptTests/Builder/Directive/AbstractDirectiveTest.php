@@ -1,6 +1,6 @@
 <?php
 
-namespace ManiaScriptTests\Directive;
+namespace ManiaScriptTests\Builder\Directive;
 
 use ManiaScriptTests\Assets\TestCase;
 
