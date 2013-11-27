@@ -229,9 +229,9 @@ class CompressorTest extends TestCase {
      */
     public function provideCopyUntil() {
         return array(
-            array('abc', 3, 'abcdef', 0, 'c', 2),
-            array('abcdef', 7, 'abcdef', 0, 'g', 6),
-            array('cd', 4, 'abcdef', 2, 'd', 3)
+            array('abc', 3, 'abcdef', 0, 'd', 3),
+            array('abcdef', 7, 'abcdef', 0, 'g', 7),
+            array('cd', 4, 'abcdef', 2, 'e', 4)
         );
     }
 

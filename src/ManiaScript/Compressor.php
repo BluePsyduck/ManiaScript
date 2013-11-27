@@ -143,7 +143,7 @@ class Compressor {
      */
     protected function readDirective() {
         $this->copyUntil("\n");
-        $this->compressedCode = substr($this->compressedCode, 0, -1);
+        $this->currentPosition += 1;
     }
 
     /**
@@ -179,12 +179,12 @@ class Compressor {
     }
 
     /**
-     * Copies some code to the compressed code without modification. The current position will be after the specified
-     * string.
+     * Copies some code to the compressed code without modification. The current position will be right before the
+     * sepcified string.
      * @param string $string The string until which the code should be copied.
      */
     protected function copyUntil($string) {
-        $newPosition = $this->find($string) + strlen($string);
+        $newPosition = $this->find($string);
         $this->compressedCode .= substr($this->code, $this->currentPosition, $newPosition - $this->currentPosition);
         $this->currentPosition = $newPosition;
     }
