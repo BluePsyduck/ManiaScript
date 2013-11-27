@@ -143,6 +143,7 @@ class Compressor {
      */
     protected function readDirective() {
         $this->copyUntil("\n");
+        $this->compressedCode = substr($this->compressedCode, 0, -1);
     }
 
     /**
