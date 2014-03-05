@@ -4,7 +4,6 @@ namespace ManiaScriptTests;
 
 use ManiaScript\Compressor;
 use ManiaScriptTests\Assets\TestCase;
-use ReflectionMethod;
 
 /**
  * The PHPUnit test of the Compressor class.

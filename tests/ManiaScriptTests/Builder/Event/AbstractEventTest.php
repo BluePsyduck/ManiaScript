@@ -2,7 +2,6 @@
 
 namespace ManiaScriptTests\Builder\Event;
 
-use ManiaScript\AbstractEvent;
 use ManiaScriptTests\Assets\TestCase;
 
 /**

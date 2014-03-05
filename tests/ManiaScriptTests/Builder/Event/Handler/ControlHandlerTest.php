@@ -119,8 +119,8 @@ class ControlHandlerTest extends TestCase {
     /**
      * Tests the buildGlobalCodeOfEvent() method.
      * @param string $expected The expected code.
-     * @param \ManiaScript\Builder\Event\AbstractEvent The event to be used.
-     * @params tring The code to be returned by buildHandlerFunction().
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event to be used.
+     * @param string $code The code to be returned by buildHandlerFunction().
      * @dataProvider provideBuildGlobalCodeOfEvent
      */
     public function testBuildGlobalCodeOfEvent($expected, $event, $code) {

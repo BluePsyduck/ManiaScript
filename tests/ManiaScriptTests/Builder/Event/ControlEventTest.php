@@ -27,8 +27,8 @@ class ControlEventTest extends TestCase {
 
     /**
      * Tests the setControlIds() method.
-     * @param array The expected value.
-     * @param string|array The control IDs to be set.
+     * @param array $expected The expected value.
+     * @param string|array $controlIds The control IDs to be set.
      * @dataProvider providerSetControlIds
      */
     public function testSetControlIds($expected, $controlIds) {

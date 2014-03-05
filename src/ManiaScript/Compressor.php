@@ -3,7 +3,7 @@
 namespace ManiaScript;
 
 /**
- * This class compresses the ManiaScript without chaning its logic, mostly by erasing all not required whitespaces
+ * This class compresses the ManiaScript without changing its logic, mostly by erasing all not required whitespaces
  * and comments.
  *
  * Example usage:
@@ -180,7 +180,7 @@ class Compressor {
 
     /**
      * Copies some code to the compressed code without modification. The current position will be right before the
-     * sepcified string.
+     * specified string.
      * @param string $string The string until which the code should be copied.
      */
     protected function copyUntil($string) {
@@ -223,7 +223,7 @@ class Compressor {
 
     /**
      * Checks whether a whitespace is required at the current position of the compressed code.
-     * @return boolean True if a whitespace is required, false if it can be omited.
+     * @return boolean True if a whitespace is required, false if it can be omitted.
      */
     protected function isWhitespaceRequired() {
         $result = false;

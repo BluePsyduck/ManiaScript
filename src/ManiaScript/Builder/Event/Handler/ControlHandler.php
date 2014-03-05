@@ -3,7 +3,6 @@
 namespace ManiaScript\Builder\Event\Handler;
 
 use ManiaScript\Builder\Event\AbstractEvent;
-use ManiaScript\Builder\Event\ControlEvent;
 
 /**
  * An extension of the basic event handler for all control based events.

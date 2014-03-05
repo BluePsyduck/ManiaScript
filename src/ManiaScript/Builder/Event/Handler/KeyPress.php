@@ -2,8 +2,6 @@
 
 namespace ManiaScript\Builder\Event\Handler;
 
-use ManiaScript\Builder\Event\KeyPress as KeyPressEvent;
-
 /**
  * The handler for KeyPress events.
  *

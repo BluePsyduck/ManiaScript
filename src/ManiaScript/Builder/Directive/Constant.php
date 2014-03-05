@@ -2,8 +2,6 @@
 
 namespace ManiaScript\Builder\Directive;
 
-use ManiaScript\Builder\Directive\AbstractDirective;
-
 /**
  * The Constant directive generates a #Const line in the ManiaScript.
  *

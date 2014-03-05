@@ -27,7 +27,7 @@ class KeyPressTest extends TestCase {
 
     /**
      * Tests the setKeyCodes() method.
-     * @param array The expected value.
+     * @param array $expected The expected value.
      * @param int|array $keyCodes The key codes to be set.
      * @dataProvider providerSetKeyCodes
      */
