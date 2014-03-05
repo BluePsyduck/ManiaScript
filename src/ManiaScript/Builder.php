@@ -164,25 +164,58 @@ class Builder {
      */
     protected function buildMainFunction() {
         $this->code .= 'main() {' . PHP_EOL
-                     . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
-                     . '    yield;' . PHP_EOL
-                     . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
-                     . '    while(True) {' . PHP_EOL
-                     . $this->eventHandlerFactory->getHandler('Loop')->getInlineCode()
-                     . '        foreach (Event in PendingEvents) {' . PHP_EOL
-                     . '            switch (Event.Type) {' . PHP_EOL;
+            . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
+            . '    yield;' . PHP_EOL
+            . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
+            . $this->buildEventLoop()
+            . '}' . PHP_EOL;
+        return $this;
+    }
 
+    /**
+     * Builds the infinite event loop.
+     * @return string The built code.
+     */
+    protected function buildEventLoop() {
+        $eventLoop = $this->eventHandlerFactory->getHandler('Loop')->getInlineCode() . $this->buildControlHandlerLoop();
+        $result = '';
+        if (!empty($eventLoop)) {
+            $result = '    while(True) {' . PHP_EOL
+                . $eventLoop
+                . '        yield;' . PHP_EOL
+                . '    }';
+        }
+        return $result;
+    }
+
+    /**
+     * Builds the control handler loop.
+     * @return string The built code.
+     */
+    protected function buildControlHandlerLoop() {
+        $controlHandlerCases = $this->buildControlHandlerCases();
+        $result = '';
+        if (!empty($controlHandlerCases)) {
+            $result = '        foreach (Event in PendingEvents) {' . PHP_EOL
+                . '            switch (Event.Type) {' . PHP_EOL
+                . $controlHandlerCases
+                . '            }' . PHP_EOL
+                . '        }' . PHP_EOL;
+        }
+        return $result;
+    }
+
+    /**
+     * Build the control handler cases.
+     * @return string The built code.
+     */
+    protected function buildControlHandlerCases() {
+        $result = '';
         foreach ($this->eventHandlerFactory->getAllControlHandlers() as $handler) {
             /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
-            $this->code .= $handler->getInlineCode();
+            $result .= $handler->getInlineCode();
         }
-
-        $this->code .= '            }' . PHP_EOL
-                     . '        }' . PHP_EOL
-                     . '    yield;' . PHP_EOL
-                     . '    }' . PHP_EOL
-                     . '}' . PHP_EOL;
-        return $this;
+        return $result;
     }
 
     /**

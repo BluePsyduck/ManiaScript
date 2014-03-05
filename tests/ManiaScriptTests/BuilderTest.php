@@ -270,46 +270,156 @@ class BuilderTest extends TestCase {
                  ->method('getInlineCode')
                  ->will($this->returnValue('def'));
 
-        /* @var $handler3 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler3 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler3->expects($this->once())
-                 ->method('getInlineCode')
-                 ->will($this->returnValue('ghi'));
-
-        /* @var $handler4 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler4 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler4->expects($this->once())
-                 ->method('getInlineCode')
-                 ->will($this->returnValue('jkl'));
-
-        /* @var $handler5 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler5 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler5->expects($this->once())
-                 ->method('getInlineCode')
-                 ->will($this->returnValue('mno'));
-
         /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllControlHandlers', 'getHandler'));
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
         $factory->expects($this->any())
                 ->method('getHandler')
                 ->will($this->returnValueMap(array(
                     array('Load', $handler1),
                     array('FirstLoop', $handler2),
-                    array('Loop', $handler3)
                 )));
-        $factory->expects($this->once())
-                ->method('getAllControlHandlers')
-                ->will($this->returnValue(array($handler4, $handler5)));
 
-        $builder = new Builder();
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildEventLoop'))
+                        ->getMock();
+        $builder->expects($this->once())
+                ->method('buildEventLoop')
+                ->will($this->returnValue('ghi'));
+
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $this->invokeMethod($builder, 'buildMainFunction');
         $code = $this->extractProperty($builder, 'code');
+        $this->assertContains('main() {', $code);
         $this->assertContains('abc', $code);
         $this->assertContains('def', $code);
         $this->assertContains('ghi', $code);
-        $this->assertContains('jkl', $code);
-        $this->assertContains('mno', $code);
+    }
+
+    /**
+     * Provides the data for the buildEventLoop() test.
+     * @return array The data.
+     */
+    public function provideBuildEventLoop() {
+        return array(
+            array(array('while(True)', 'yield;', 'abc', 'def'), array(), 'abc', 'def'),
+            array(array('while(True)', 'yield;', 'abc'), array(), 'abc', ''),
+            array(array('while(True)', 'yield;', 'def'), array(), '', 'def'),
+            array(array(), array('while(True)', 'yield;'), '', ''),
+        );
+    }
+
+    /**
+     * Tests the buildEventLoop() method.
+     * @param array $expectedStrings The strings expected in the result.
+     * @param array $notExpectedStrings The strings expected to be not in the result.
+     * @param string $resultLoopInline The result of the getInlineCode() method call of the Loop handler.
+     * @param string $resultControlHandlerLoop The result of the buildControlHandlerLoop() method call.
+     * @covers \ManiaScript\Builder::buildEventLoop
+     * @dataProvider provideBuildEventLoop
+     */
+    public function testBuildEventLoop(
+        $expectedStrings, $notExpectedStrings, $resultLoopInline, $resultControlHandlerLoop
+    ) {
+        /* @var $handler \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler->expects($this->once())
+                ->method('getInlineCode')
+                ->will($this->returnValue($resultLoopInline));
+
+        /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
+        $factory->expects($this->once())
+                ->method('getHandler')
+                ->with('Loop')
+                ->will($this->returnValue($handler));
+
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildControlHandlerLoop'))
+                        ->getMock();
+        $builder->expects($this->once())
+                ->method('buildControlHandlerLoop')
+                ->will($this->returnValue($resultControlHandlerLoop));
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
+
+        $result = $this->invokeMethod($builder, 'buildEventLoop');
+        foreach ($expectedStrings as $expectedString) {
+            $this->assertContains($expectedString, $result);
+        }
+        foreach ($notExpectedStrings as $notExpectedString) {
+            $this->assertNotContains($notExpectedString, $result);
+        }
+    }
+
+    /**
+     * Provides the data for the buildControlHandlerLoop() test.
+     * @return array The data.
+     */
+    public function provideBuildControlHandlerLoop() {
+        return array(
+            array(array('foreach (Event in PendingEvents)', 'switch (Event.Type)', 'abc'), array(), 'abc'),
+            array(array(), array('foreach (Event in PendingEvents)', 'switch (Event.Type)'), ''),
+        );
+    }
+
+    /**
+     * Tests the buildControlHandlerLoop() method.
+     * @param array $expectedStrings The strings expected in the result.
+     * @param array $notExpectedStrings The strings expected to be not in the result.
+     * @param string $resultControlHandlerCases The result of the buildControlHandlerCases() method call.
+     * @covers \ManiaScript\Builder::buildControlHandlerLoop
+     * @dataProvider provideBuildControlHandlerLoop
+     */
+    public function testBuildControlHandlerLoop($expectedStrings, $notExpectedStrings, $resultControlHandlerCases) {
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildControlHandlerCases'))
+                        ->getMock();
+        $builder->expects($this->once())
+                ->method('buildControlHandlerCases')
+                ->will($this->returnValue($resultControlHandlerCases));
+
+        $result = $this->invokeMethod($builder, 'buildControlHandlerLoop');
+        foreach ($expectedStrings as $expectedString) {
+            $this->assertContains($expectedString, $result);
+        }
+        foreach ($notExpectedStrings as $notExpectedString) {
+            $this->assertNotContains($notExpectedString, $result);
+        }
+    }
+
+    /**
+     * Tests the buildControlHandlerCases() method.
+     * @covers \ManiaScript\Builder::buildControlHandlerCases
+     */
+    public function testBuildControlHandlerCases() {
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler1->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('abc'));
+
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        $handler2->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('def'));
+
+        /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllControlHandlers'));
+        $factory->expects($this->once())
+                ->method('getAllControlHandlers')
+                ->will($this->returnValue(array($handler1, $handler2)));
+
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildControlHandlerLoop'))
+                        ->getMock();
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
+
+        $result = $this->invokeMethod($builder, 'buildControlHandlerCases');
+        $this->assertEquals('abcdef', $result);
     }
 
     /**
