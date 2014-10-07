@@ -11,7 +11,7 @@ namespace ManiaScript\Builder\Event\Handler;
 class PseudoHandler extends AbstractHandler {
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function buildCode() {
         $this->globalCode = '';

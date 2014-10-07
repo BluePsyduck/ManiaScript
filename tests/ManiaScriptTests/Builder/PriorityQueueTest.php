@@ -46,6 +46,7 @@ class PriorityQueueTest extends TestCase {
      * @param array $expected The expected items.
      * @param \ManiaScript\Builder\PriorityQueueItem $newItem The item to be added.
      * @param array $existingItems The items before adding the new one.
+     * @covers \ManiaScript\Builder\PriorityQueue::add
      * @dataProvider provideAdd
      */
     public function testAdd($expected, $newItem, $existingItems) {
@@ -71,6 +72,7 @@ class PriorityQueueTest extends TestCase {
      * Tests the isEmpty() method.
      * @param boolean $expected The expected result.
      * @param array $items The items of the queue.
+     * @covers \ManiaScript\Builder\PriorityQueue::isEmpty
      * @dataProvider provideIsEmpty
      */
     public function testIsEmpty($expected, $items) {
@@ -82,6 +84,7 @@ class PriorityQueueTest extends TestCase {
 
     /**
      * Tests the mergeItems() method.
+     * @covers \ManiaScript\Builder\PriorityQueue::mergeItems
      */
     public function testMergeItems() {
         $rawItems = array(
@@ -101,6 +104,7 @@ class PriorityQueueTest extends TestCase {
 
     /**
      * Tests the rewind() method.
+     * @covers \ManiaScript\Builder\PriorityQueue::rewind
      */
     public function testRewind() {
         /* @var $queue \ManiaScript\Builder\PriorityQueue|\PHPUnit_Framework_MockObject_MockObject */
@@ -114,6 +118,7 @@ class PriorityQueueTest extends TestCase {
 
     /**
      * Tests the next() method.
+     * @covers \ManiaScript\Builder\PriorityQueue::next
      */
     public function testNext() {
         $queue = new PriorityQueue();
@@ -140,6 +145,7 @@ class PriorityQueueTest extends TestCase {
      * @param boolean $expected The expected result.
      * @param int $currentIndex The current index to be set.
      * @param array $mergedItems The merged items to be set.
+     * @covers \ManiaScript\Builder\PriorityQueue::valid
      * @dataProvider provideValid
      */
     public function testValid($expected, $currentIndex, $mergedItems) {
@@ -152,6 +158,7 @@ class PriorityQueueTest extends TestCase {
 
     /**
      * Tests the key() method.
+     * @covers \ManiaScript\Builder\PriorityQueue::key
      */
     public function testKey() {
         $expected = 42;
@@ -179,6 +186,7 @@ class PriorityQueueTest extends TestCase {
      * @param mixed $expected The expected value.
      * @param int $currentIndex The current index to be set.
      * @param array $mergedItems The merged items to be set.
+     * @covers \ManiaScript\Builder\PriorityQueue::current
      * @dataProvider provideCurrent
      */
     public function testCurrent($expected, $currentIndex, $mergedItems) {

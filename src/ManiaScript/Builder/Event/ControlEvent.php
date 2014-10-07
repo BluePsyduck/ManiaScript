@@ -18,7 +18,7 @@ abstract class ControlEvent extends AbstractEvent {
     /**
      * Sets the IDs of the controls, this event should listen to.
      * @param string|array $controlIds Either a single ID as string, or multiple IDs as array.
-     * @return ControlEvent Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setControlIds($controlIds) {
         if (!is_array($controlIds)) {

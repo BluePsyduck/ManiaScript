@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class OptionsTest extends TestCase {
     /**
      * Tests property initialization on class construction.
+     * @coversNothing
      */
     public function testConstruct() {
         $options = new Options();
@@ -23,6 +24,7 @@ class OptionsTest extends TestCase {
 
     /**
      * Tests the setCompress() method.
+     * @covers \ManiaScript\Builder\Options::setCompress
      */
     public function testSetCompress() {
         $expected = true;
@@ -34,6 +36,7 @@ class OptionsTest extends TestCase {
 
     /**
      * Tests the getCompress() method.
+     * @covers \ManiaScript\Builder\Options::getCompress
      */
     public function testGetCompress() {
         $expected = true;
@@ -44,6 +47,7 @@ class OptionsTest extends TestCase {
 
     /**
      * Tests the setIncludeScriptTag() method.
+     * @covers \ManiaScript\Builder\Options::setIncludeScriptTag
      */
     public function testSetIncludeScriptTag() {
         $expected = true;
@@ -55,6 +59,7 @@ class OptionsTest extends TestCase {
 
     /**
      * Tests the getIncludeScriptTag() method.
+     * @covers \ManiaScript\Builder\Options::getIncludeScriptTag
      */
     public function testGetIncludeScriptTag() {
         $expected = true;

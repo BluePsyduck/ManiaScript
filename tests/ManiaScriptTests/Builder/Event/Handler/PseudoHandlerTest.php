@@ -15,6 +15,7 @@ use ManiaScriptTests\Assets\TestCase;
 class PseudoHandlerTest extends TestCase {
     /**
      * Tests the buildCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\PseudoHandler::buildCode
      */
     public function testBuildCode() {
         $event1 = new Event();

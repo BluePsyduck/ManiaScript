@@ -30,6 +30,7 @@ class KeyPressTest extends TestCase {
      * Tests the buildCondition() method.
      * @param string $expected The expected condition string.
      * @param array $keyCodes The key codes to be set.
+     * @covers \ManiaScript\Builder\Event\Handler\KeyPress::buildCondition
      * @dataProvider provideBuildCondition
      */
     public function testBuildCondition($expected, $keyCodes) {

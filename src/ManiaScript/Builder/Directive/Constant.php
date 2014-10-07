@@ -18,7 +18,7 @@ class Constant extends AbstractDirective {
     /**
      * Sets the value of the directive.
      * @param string $value The value
-     * @return \ManiaScript\Builder\Directive\Constant Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setValue($value) {
         $this->value = $value;

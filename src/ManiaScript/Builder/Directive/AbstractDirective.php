@@ -18,7 +18,7 @@ abstract class AbstractDirective {
     /**
      * Sets the name of the directive.
      * @param string $name The name.
-     * @return \ManiaScript\Builder\Directive\AbstractDirective Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setName($name) {
         $this->name = trim($name);

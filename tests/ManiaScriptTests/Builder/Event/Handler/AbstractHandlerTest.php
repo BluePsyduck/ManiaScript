@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class AbstractHandlerTest extends TestCase {
     /**
      * Tests the constructor.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::__construct
      */
     public function testConstruct() {
         /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
@@ -24,6 +25,7 @@ class AbstractHandlerTest extends TestCase {
 
     /**
      * Tests the addEvent() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::addEvent
      */
     public function testAddEvent() {
         $expected = new Event();
@@ -43,6 +45,7 @@ class AbstractHandlerTest extends TestCase {
 
     /**
      * Tests the getGlobalCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::getGlobalCode
      */
     public function testGetGlobalCode() {
         $expected = 'abc';
@@ -56,6 +59,7 @@ class AbstractHandlerTest extends TestCase {
 
     /**
      * Tests the getInlineCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::getInlineCode
      */
     public function testGetInlineCode() {
         $expected = 'abc';
@@ -105,6 +109,7 @@ class AbstractHandlerTest extends TestCase {
      * @param array $expectedArray The array to be expected in the handler.
      * @param array $array The array to be set into the handler.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event to be used.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::getHandlerFunctionName
      * @dataProvider providerGetHandlerFunctionName
      */
     public function testGetHandlerFunctionName($expectedName, $expectedArray, $array, $event) {
@@ -120,6 +125,7 @@ class AbstractHandlerTest extends TestCase {
 
     /**
      * Tests the buildHandlerFunction() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::buildHandlerFunction
      */
     public function testBuildHandlerFunction() {
         $event = new Event();
@@ -141,12 +147,13 @@ class AbstractHandlerTest extends TestCase {
             ->will($this->returnValue('def'));
 
         $result = $this->invokeMethod($handler, 'buildHandlerFunction', array($event));
-        $this->assertContains('Void def(CMlEvent Event)', $result);
+        $this->assertContains('Void def()', $result);
         $this->assertContains('abc', $result);
     }
 
     /**
      * Tests the buildHandlerFunctionCall() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::buildHandlerFunctionCall
      */
     public function testBuildHandlerFunctionCall() {
         $event = new Event();

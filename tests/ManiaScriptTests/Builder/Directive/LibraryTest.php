@@ -13,24 +13,66 @@ use ManiaScriptTests\Assets\TestCase;
  */
 class LibraryTest extends TestCase {
     /**
+     * Tests the setLibrary() method.
+     * @covers \ManiaScript\Builder\Directive\Library::setLibrary
+     */
+    public function testSetLibrary() {
+        $expected = 'abc';
+        $directive = new Library();
+        $result = $directive->setLibrary($expected);
+        $this->assertEquals($directive, $result);
+        $this->assertPropertyEquals($expected, $directive, 'library');
+    }
+
+    /**
+     * Tests the getLibrary() method.
+     * @covers \ManiaScript\Builder\Directive\Library::getLibrary
+     */
+    public function testGetLibrary() {
+        $expected = 'abc';
+        $directive = new Library();
+        $this->injectProperty($directive, 'library', $expected);
+        $result = $directive->getLibrary();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Tests the setAlias() method.
+     * @covers \ManiaScript\Builder\Directive\Library::setAlias
      */
     public function testSetAlias() {
         $expected = 'abc';
-        $directive = new Library();
+
+        /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMockBuilder('ManiaScript\Builder\Directive\Library')
+                          ->setMethods(array('setName'))
+                          ->getMock();
+        $directive->expects($this->once())
+                  ->method('setName')
+                  ->with($expected)
+                  ->will($this->returnSelf());
+
         $result = $directive->setAlias($expected);
-        $this->assertPropertyEquals($expected, $directive, 'alias');
         $this->assertEquals($directive, $result);
     }
 
     /**
      * Tests the getAlias() method.
+     * @covers \ManiaScript\Builder\Directive\Library::getAlias
      */
     public function testGetAlias() {
         $expected = 'abc';
-        $directive = new Library();
-        $this->injectProperty($directive, 'alias', $expected);
-        $this->assertEquals($expected, $directive->getAlias());
+
+        /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
+        $directive = $this->getMockBuilder('ManiaScript\Builder\Directive\Library')
+                          ->setMethods(array('getName'))
+                          ->getMock();
+        $directive->expects($this->once())
+                  ->method('getName')
+                  ->will($this->returnValue($expected));
+
+        $result = $directive->getAlias();
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -45,18 +87,22 @@ class LibraryTest extends TestCase {
     }
 
     /**
-     * Tests the getCode() method.
+     * Tests the buildCode() method.
      * @param string $expected The expected string.
-     * @param string $name The name of the library.
+     * @param string $library The name of the library.
      * @param string $alias The alias of the library.
+     * @covers \ManiaScript\Builder\Directive\Library::buildCode
      * @dataProvider providerGetCode
      */
-    public function testGetCode($expected, $name, $alias) {
+    public function testBuildCode($expected, $library, $alias) {
         /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Builder\Directive\Library', array('getName', 'getAlias'));
+        $directive = $this->getMock(
+            'ManiaScript\Builder\Directive\Library',
+            array('getLibrary', 'getAlias')
+        );
         $directive->expects($this->any())
-                  ->method('getName')
-                  ->will($this->returnValue($name));
+                  ->method('getLibrary')
+                  ->will($this->returnValue($library));
         $directive->expects($this->any())
                   ->method('getAlias')
                   ->will($this->returnValue($alias));

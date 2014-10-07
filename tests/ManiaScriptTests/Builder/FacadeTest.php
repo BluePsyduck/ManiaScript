@@ -40,6 +40,28 @@ class FacadeTest extends TestCase {
     }
 
     /**
+     * Tests generically one of the get*Code() methods.
+     * @param string $method The name of the method to test.
+     * @param array $params The parameters to be passed.
+     */
+    protected function doTestGetCode($method, $params) {
+        $expectedResult = 'foo';
+
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array($method))
+                        ->getMock();
+        $temp = $builder->expects($this->once())
+                        ->method($method);
+        $temp = call_user_func_array(array($temp, 'with'), $params);
+        $temp->will($this->returnValue($expectedResult));
+
+        $facade = new Facade($builder);
+        $result = call_user_func_array(array($facade, $method), $params);
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
      * Provides the data for the constructor test.
      * @return array The data.
      */
@@ -55,6 +77,7 @@ class FacadeTest extends TestCase {
      * Tests the constructor.
      * @param object|string $expected The expected builder instance, or the expected class of it.
      * @param \ManiaScript\Builder|null $builder The builder to be set.
+     * @covers \ManiaScript\Builder\Facade::__construct
      * @dataProvider provideConstruct
      */
     public function testConstruct($expected, $builder) {
@@ -74,6 +97,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the getOptions() method.
+     * @covers \ManiaScript\Builder\Facade::getOptions
      */
     public function testGetOptions() {
         $options = new stdClass();
@@ -91,6 +115,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addSetting() method.
+     * @covers \ManiaScript\Builder\Facade::addSetting
      */
     public function testAddSetting() {
         $this->doTestAdd('addSetting', 'addDirective', array(
@@ -101,6 +126,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addConstant() method.
+     * @covers \ManiaScript\Builder\Facade::addConstant
      */
     public function testAddConstant() {
         $this->doTestAdd('addConstant', 'addDirective', array(
@@ -110,16 +136,18 @@ class FacadeTest extends TestCase {
     }
     /**
      * Tests the addLibrary() method.
+     * @covers \ManiaScript\Builder\Facade::addLibrary
      */
     public function testAddLibrary() {
         $this->doTestAdd('addLibrary', 'addDirective', array(
-            'name' => 'abc',
-            'alias' => 'def'
+            'library' => 'abc',
+            'name' => 'def'
         ));
     }
 
     /**
      * Tests the addGlobalCode() method.
+     * @covers \ManiaScript\Builder\Facade::addGlobalCode
      */
     public function testAddGlobalCode() {
         $this->doTestAdd('addGlobalCode', 'addGlobalCode', array(
@@ -130,6 +158,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addMouseClick() method.
+     * @covers \ManiaScript\Builder\Facade::addMouseClick
      */
     public function testAddMouseClick() {
         $this->doTestAdd('addMouseClick', 'addEvent', array(
@@ -142,6 +171,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addMouseOver() method.
+     * @covers \ManiaScript\Builder\Facade::addMouseOver
      */
     public function testAddMouseOver() {
         $this->doTestAdd('addMouseOver', 'addEvent', array(
@@ -154,6 +184,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addMouseOut() method.
+     * @covers \ManiaScript\Builder\Facade::addMouseOut
      */
     public function testAddMouseOut() {
         $this->doTestAdd('addMouseOut', 'addEvent', array(
@@ -166,6 +197,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addEntrySubmit() method.
+     * @covers \ManiaScript\Builder\Facade::addEntrySubmit
      */
     public function testAddEntrySubmit() {
         $this->doTestAdd('addEntrySubmit', 'addEvent', array(
@@ -178,6 +210,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addKeyPress() method.
+     * @covers \ManiaScript\Builder\Facade::addKeyPress
      */
     public function testAddKeyPress() {
         $this->doTestAdd('addKeyPress', 'addEvent', array(
@@ -189,7 +222,21 @@ class FacadeTest extends TestCase {
     }
 
     /**
+     * Tests the addMenuNavigation() method.
+     * @covers \ManiaScript\Builder\Facade::addMenuNavigation
+     */
+    public function testAddMenuNavigation() {
+        $this->doTestAdd('addMenuNavigation', 'addEvent', array(
+            'code' => 'abc',
+            'actions' => array('Up', 'Down'),
+            'priority' => 42,
+            'inline' => true
+        ));
+    }
+
+    /**
      * Tests the addLoad() method.
+     * @covers \ManiaScript\Builder\Facade::addLoad
      */
     public function testAddLoad() {
         $this->doTestAdd('addLoad', 'addEvent', array(
@@ -201,6 +248,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addFirstLoop() method.
+     * @covers \ManiaScript\Builder\Facade::addFirstLoop
      */
     public function testAddFirstLoop() {
         $this->doTestAdd('addFirstLoop', 'addEvent', array(
@@ -212,6 +260,7 @@ class FacadeTest extends TestCase {
 
     /**
      * Tests the addLoop() method.
+     * @covers \ManiaScript\Builder\Facade::addLoop
      */
     public function testAddLoop() {
         $this->doTestAdd('addLoop', 'addEvent', array(
@@ -222,7 +271,56 @@ class FacadeTest extends TestCase {
     }
 
     /**
+     * Tests the addCustomEvent() method.
+     * @covers \ManiaScript\Builder\Facade::addCustomEvent
+     */
+    public function testAddCustomEvent() {
+        $this->doTestAdd('addCustomEvent', 'addEvent', array(
+            'name' => 'abc',
+            'code' => 'def',
+            'priority' => 42,
+            'inline' => true
+        ));
+    }
+
+    /**
+     * Tests the getTriggerCustomEventCode() method.
+     * @covers \ManiaScript\Builder\Facade::getTriggerCustomEventCode
+     */
+    public function testGetTriggerCustomEventCode() {
+        $this->doTestGetCode('getTriggerCustomEventCode', array(
+            'name' => 'abc'
+        ));
+    }
+
+    /**
+     * Tests the addTimer() method.
+     * @covers \ManiaScript\Builder\Facade::addTimer
+     */
+    public function testAddTimer() {
+        $this->doTestAdd('addTimer', 'addEvent', array(
+            'name' => 'abc',
+            'code' => 'def',
+            'priority' => 42,
+            'inline' => true
+        ));
+    }
+
+    /**
+     * Tests the getAddTimerCode() method.
+     * @covers \ManiaScript\Builder\Facade::getAddTimerCode
+     */
+    public function testGetAddTimerCode() {
+        $this->doTestGetCode('getAddTimerCode', array(
+            'name' => 'abc',
+            'delay' => 1337,
+            'replaceExisting' => true
+        ));
+    }
+
+    /**
      * Tests the build() method.
+     * @covers \ManiaScript\Builder\Facade::build
      */
     public function testBuild() {
         $expected = 'abc';

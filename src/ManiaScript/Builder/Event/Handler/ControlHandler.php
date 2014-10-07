@@ -22,7 +22,7 @@ abstract class ControlHandler extends AbstractHandler {
 
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function buildCode() {
         $this->globalCode = '';
@@ -55,7 +55,7 @@ abstract class ControlHandler extends AbstractHandler {
     /**
      * Builds the inline code of a concrete event.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Builder\Event\Handler\ControlHandler Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function buildInlineCodeOfEvent(AbstractEvent $event) {
         if ($event->getInline()) {
@@ -90,5 +90,25 @@ abstract class ControlHandler extends AbstractHandler {
             $result = implode(' || ', $conditions);
         }
         return $result;
+    }
+
+    /**
+     * Builds the handler function of the event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
+     * @return string THe handler function.
+     */
+    protected function buildHandlerFunction($event) {
+        return 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL
+            . $event->getCode() . PHP_EOL
+            . '}' . PHP_EOL;
+    }
+
+    /**
+     * Builds the call of the handler function of the event.
+     * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
+     * @return string The handler function call.
+     */
+    protected function buildHandlerFunctionCall($event) {
+        return $this->getHandlerFunctionName($event) . '(Event);' . PHP_EOL;
     }
 }

@@ -63,7 +63,7 @@ class Compressor {
     /**
      * Sets the code to be compressed.
      * @param string $code The code.
-     * @return \ManiaScript\Compressor Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setCode($code) {
         $this->code = trim($code);
@@ -73,7 +73,7 @@ class Compressor {
 
     /**
      * Compresses the code.
-     * @return \ManiaScript\Compressor Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function compress() {
         $this->currentPosition = 0;
@@ -179,8 +179,8 @@ class Compressor {
     }
 
     /**
-     * Copies some code to the compressed code without modification. The current position will be right before the
-     * specified string.
+     * Copies some code to the compressed code without modification. The current position will be after the specified
+     * string.
      * @param string $string The string until which the code should be copied.
      */
     protected function copyUntil($string) {

@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class ConstantTest extends TestCase {
     /**
      * Tests the setValue() method.
+     * @covers \ManiaScript\Builder\Directive\Constant::setValue
      */
     public function testSetValue() {
         $expected = 'abc';
@@ -25,6 +26,7 @@ class ConstantTest extends TestCase {
 
     /**
      * Tests the getValue() method.
+     * @covers \ManiaScript\Builder\Directive\Constant::getValue
      */
     public function testGetValue() {
         $expected = 'abc';
@@ -35,6 +37,7 @@ class ConstantTest extends TestCase {
 
     /**
      * Tests the buildCode() method.
+     * @covers \ManiaScript\Builder\Directive\Constant::buildCode
      */
     public function testBuildCode() {
         /* @var $directive \ManiaScript\Builder\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */

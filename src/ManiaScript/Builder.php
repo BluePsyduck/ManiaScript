@@ -16,7 +16,6 @@ use ManiaScript\Builder\Event\Handler\Factory;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 class Builder {
-
     /**
      * The options of the builder.
      * @var \ManiaScript\Builder\Options
@@ -40,6 +39,12 @@ class Builder {
      * @var \ManiaScript\Builder\PriorityQueue
      */
     protected $globalCodes;
+
+    /**
+     * Whether the timers are used.
+     * @var bool
+     */
+    protected $useTimers = false;
 
     /**
      * The built code.
@@ -67,7 +72,7 @@ class Builder {
     /**
      * Adds a directive to the ManiaScript.
      * @param \ManiaScript\Builder\Directive\AbstractDirective $directive The directive.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addDirective(AbstractDirective $directive) {
         $this->directives[$directive->getName()] = $directive;
@@ -77,7 +82,7 @@ class Builder {
     /**
      * Adds code to the global scope.
      * @param \ManiaScript\Builder\Code $code The code.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addGlobalCode(Code $code) {
         $this->globalCodes->add($code);
@@ -87,7 +92,7 @@ class Builder {
     /**
      * Adds an event to the builder.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addEvent(AbstractEvent $event) {
         $this->eventHandlerFactory->getHandlerForEvent($event)->addEvent($event);
@@ -95,14 +100,36 @@ class Builder {
     }
 
     /**
+     * Returns the code to use to call a custom event.
+     * @param string $name The name of the custom event to call.
+     * @return string The code. Insert it into any other ManiaScript code.
+     */
+    public function getTriggerCustomEventCode($name) {
+        return '+++' . $name . '+++';
+    }
+
+    /**
+     * Returns the code to add a new timer.
+     * @param string $name The name of the timer.
+     * @param int $delay The delay of the timer in milliseconds.
+     * @param bool $replaceExisting Whether to replace existing timers with the same name.
+     * @return string The code. Insert it into any other ManiaScript code.
+     */
+    public function getAddTimerCode($name, $delay, $replaceExisting = false) {
+        $this->useTimers = true;
+        return '__AddTimer("' . $name . '", ' . $delay . ', ' . ($replaceExisting ? 'True' : 'False') . ');';
+    }
+
+    /**
      * Builds the ManiaScript code.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function build() {
-        $this->code = '#RequireContext CMlScript' . PHP_EOL;
+        $this->code = '#RequireContext CMlBrowser' . PHP_EOL;
 
         $this->prepareHandlers()
              ->buildDirectives()
+             ->buildInternalCode()
              ->buildGlobalCode()
              ->buildMainFunction()
              ->compress()
@@ -120,7 +147,7 @@ class Builder {
 
     /**
      * Prepares all the events.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function prepareHandlers() {
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
@@ -132,7 +159,7 @@ class Builder {
 
     /**
      * Builds the directives.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function buildDirectives() {
         foreach ($this->directives as $directive) {
@@ -143,8 +170,41 @@ class Builder {
     }
 
     /**
+     * Builds the internal code of the ManiaScript builder.
+     * @return $this Implementing fluent interface.
+     */
+    protected function buildInternalCode() {
+        if ($this->useTimers) {
+            $this->code .= <<<EOT
+/** @var The list of timers waiting to be executed. */
+declare Text[Integer] __Timers;
+
+/**
+ * Adds a new timer to the list of timers.
+ * @param Name The name of the timer to add.
+ * @param Delay The delay of the timer in milliseconds.
+ * @param ReplacePrevious Whether to remove previously added timers with the same name.
+ */
+Void __AddTimer(Text Name, Integer Delay, Boolean ReplacePrevious) {
+    if (ReplacePrevious) {
+        while (__Timers.exists(Name)) {
+            declare Temp = __Timers.remove(Name);
+        }
+    }
+    declare Integer Time = CurrentTime + Delay;
+    while (__Timers.existskey(Time)) {
+        Time = Time + 1; // Avoid collisions with timers triggering on the same millisecond
+    }
+    __Timers[Time] = Name;
+}
+EOT;
+        }
+        return $this;
+    }
+
+    /**
      * Builds the global code of the ManiaScript.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function buildGlobalCode() {
         foreach ($this->globalCodes as $code) {
@@ -160,15 +220,16 @@ class Builder {
 
     /**
      * Builds the main function of the ManiaScript.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function buildMainFunction() {
-        $this->code .= 'main() {' . PHP_EOL
-            . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
-            . '    yield;' . PHP_EOL
-            . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
-            . $this->buildEventLoop()
-            . '}' . PHP_EOL;
+        $this->code .= 'Void __Dummy() {}' . PHP_EOL
+                     . 'main() {' . PHP_EOL
+                     . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
+                     . '    yield;' . PHP_EOL
+                     . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
+                     . $this->buildEventLoop()
+                     . '}' . PHP_EOL;
         return $this;
     }
 
@@ -177,13 +238,16 @@ class Builder {
      * @return string The built code.
      */
     protected function buildEventLoop() {
-        $eventLoop = $this->eventHandlerFactory->getHandler('Loop')->getInlineCode() . $this->buildControlHandlerLoop();
+        $eventLoop = $this->eventHandlerFactory->getHandler('Loop')->getInlineCode()
+            . $this->buildControlHandlerLoop()
+            . $this->eventHandlerFactory->getHandler('Timer')->getInlineCode();
+
         $result = '';
         if (!empty($eventLoop)) {
             $result = '    while(True) {' . PHP_EOL
-                . $eventLoop
-                . '        yield;' . PHP_EOL
-                . '    }';
+                    . $eventLoop
+                    . '        yield;' . PHP_EOL
+                    . '    }';
         }
         return $result;
     }
@@ -197,10 +261,10 @@ class Builder {
         $result = '';
         if (!empty($controlHandlerCases)) {
             $result = '        foreach (Event in PendingEvents) {' . PHP_EOL
-                . '            switch (Event.Type) {' . PHP_EOL
-                . $controlHandlerCases
-                . '            }' . PHP_EOL
-                . '        }' . PHP_EOL;
+                    . '            switch (Event.Type) {' . PHP_EOL
+                    . $controlHandlerCases
+                    . '            }' . PHP_EOL
+                    . '        }' . PHP_EOL;
         }
         return $result;
     }
@@ -220,7 +284,7 @@ class Builder {
 
     /**
      * Compresses the code if enabled in the options.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function compress() {
         if ($this->options->getCompress()) {
@@ -234,7 +298,7 @@ class Builder {
 
     /**
      * Adds the script-tag to the code if enabled in the options.
-     * @return \ManiaScript\Builder Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function addScriptTag() {
         if ($this->options->getIncludeScriptTag()) {

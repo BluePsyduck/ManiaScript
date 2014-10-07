@@ -29,6 +29,7 @@ class KeyPressTest extends TestCase {
      * Tests the setKeyCodes() method.
      * @param array $expected The expected value.
      * @param int|array $keyCodes The key codes to be set.
+     * @covers \ManiaScript\Builder\Event\KeyPress::setKeyCodes
      * @dataProvider providerSetKeyCodes
      */
     public function testSetKeyCodes($expected, $keyCodes) {
@@ -41,6 +42,7 @@ class KeyPressTest extends TestCase {
 
     /**
      * Tests the getKeyCodes() method.
+     * @covers \ManiaScript\Builder\Event\KeyPress::getKeyCodes
      */
     public function testGetKeyCodes() {
         $expected = array('abc');

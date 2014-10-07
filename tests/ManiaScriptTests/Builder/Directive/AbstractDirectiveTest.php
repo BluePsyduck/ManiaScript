@@ -13,9 +13,11 @@ use ManiaScriptTests\Assets\TestCase;
 class AbstractDirectiveTest extends TestCase {
     /**
      * Tests the setName() method.
+     * @covers \ManiaScript\Builder\Directive\AbstractDirective::setName
      */
     public function testSetName() {
         $expected = 'abc';
+        /* @var $directive \ManiaScript\Builder\Directive\AbstractDirective */
         $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
         $result = $directive->setName($expected);
         $this->assertPropertyEquals($expected, $directive, 'name');
@@ -24,9 +26,11 @@ class AbstractDirectiveTest extends TestCase {
 
     /**
      * Tests the getName() method.
+     * @covers \ManiaScript\Builder\Directive\AbstractDirective::getName
      */
     public function testGetName() {
         $expected = 'abc';
+        /* @var $directive \ManiaScript\Builder\Directive\AbstractDirective */
         $directive = $this->getMockForAbstractClass('ManiaScript\Builder\Directive\AbstractDirective');
         $this->injectProperty($directive, 'name', $expected);
         $this->assertEquals($expected, $directive->getName());

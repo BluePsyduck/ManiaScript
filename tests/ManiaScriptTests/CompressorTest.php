@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class CompressorTest extends TestCase {
     /**
      * Tests property initialization on class construction.
+     * @coversNothing
      */
     public function testConstruct() {
         $compressor = new Compressor();
@@ -24,6 +25,7 @@ class CompressorTest extends TestCase {
 
     /**
      * Tests the setCode() method.
+     * @covers \ManiaScript\Compressor::setCode
      */
     public function testSetCode() {
         $expected = 'abc';
@@ -36,6 +38,7 @@ class CompressorTest extends TestCase {
 
     /**
      * Tests the compress() method.
+     * @covers \ManiaScript\Compressor::compress
      */
     public function testCompress() {
         /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
@@ -52,6 +55,7 @@ class CompressorTest extends TestCase {
 
     /**
      * Tests the getCompressedCode() method.
+     * @covers \ManiaScript\Compressor::getCompressedCode
      */
     public function testGetCompressedCode() {
         $expected = 'abc';
@@ -78,6 +82,7 @@ class CompressorTest extends TestCase {
      * Tests the read() method.
      * @param string|null $expected The method expected to be called.
      * @param string $code The code to be used.
+     * @covers \ManiaScript\Compressor::read
      * @dataProvider provideRead
      */
     public function testRead($expected, $code) {
@@ -104,7 +109,7 @@ class CompressorTest extends TestCase {
 
     /**
      * Data provider for the readSlash test.
-     * return array The data.
+     * @return array The data.
      */
     public function provideReadSlash() {
         return array(
@@ -124,6 +129,7 @@ class CompressorTest extends TestCase {
      * @param string|null $expected The parameter expected in skipUntil(), or null if not called.
      * @param string $code The code to be used.
      * @param int $currentPosition The current position in the code.
+     * @covers \ManiaScript\Compressor::readSlash
      * @dataProvider provideReadSlash
      */
     public function testReadSlash($expected, $code, $currentPosition) {
@@ -147,6 +153,7 @@ class CompressorTest extends TestCase {
 
     /**
      * Tests the readDirective() method.
+     * @covers \ManiaScript\Compressor::readDirective
      */
     public function testReadDirective() {
         $compressor = $this->getMock('ManiaScript\Compressor', array('copyUntil'));
@@ -176,6 +183,7 @@ class CompressorTest extends TestCase {
      * @param string $code The code to be used.
      * @param int $currentPosition The current position.
      * @param string $compressedCode The compressed code.
+     * @covers \ManiaScript\Compressor::readString
      * @dataProvider provideReadString
      */
     public function testReadString($expectedPosition, $expectedCode, $code, $currentPosition, $compressedCode) {
@@ -207,6 +215,7 @@ class CompressorTest extends TestCase {
      * @param string $expected The expected compressed code.
      * @param string $compressedCode The compressed code.
      * @param boolean $isWhitespaceRequired The result of the isWhitespaceRequired() call.
+     * @covers \ManiaScript\Compressor::readWhitespace
      * @dataProvider provideReadWhitespace
      */
     public function testReadWhitespace($expected, $compressedCode, $isWhitespaceRequired) {
@@ -242,6 +251,7 @@ class CompressorTest extends TestCase {
      * @param int $currentPosition The current position.
      * @param string $findString The string to copy until.
      * @param int $findResult The result of the find() method call.
+     * @covers \ManiaScript\Compressor::copyUntil
      * @dataProvider provideCopyUntil
      */
     public function testCopyUntil($expected, $expectedPosition, $code, $currentPosition, $findString, $findResult) {
@@ -274,6 +284,7 @@ class CompressorTest extends TestCase {
      * @param int $expected The expected position.
      * @param int $find The position returned by find().
      * @param string $string The string to use in find().
+     * @covers \ManiaScript\Compressor::skipUntil
      * @dataProvider provideSkipUntil
      */
     public function testSkipUntil($expected, $find, $string) {
@@ -306,6 +317,7 @@ class CompressorTest extends TestCase {
      * @param int $expected The expected position.
      * @param string $code The code to be used.
      * @param int $currentPosition The current position.
+     * @covers \ManiaScript\Compressor::skipWhitespace
      * @dataProvider provideSkipWhitespace
      */
     public function testSkipWhitespace($expected, $code, $currentPosition) {
@@ -339,6 +351,7 @@ class CompressorTest extends TestCase {
      * @param string $code The code to be used.
      * @param string $string The char to find.
      * @param int $currentPosition The current position in the code.
+     * @covers \ManiaScript\Compressor::find
      * @dataProvider provideFind
      */
     public function testFind($expected, $code, $string, $currentPosition) {
@@ -373,6 +386,7 @@ class CompressorTest extends TestCase {
      * @param boolean $expected The expected result.
      * @param string $code The code to be used.
      * @param string $compressedCode The compressed code.
+     * @covers \ManiaScript\Compressor::isWhitespaceRequired
      * @dataProvider provideIsWhitespaceRequired
      */
     public function testIsWhitespaceRequired($expected, $code, $compressedCode) {

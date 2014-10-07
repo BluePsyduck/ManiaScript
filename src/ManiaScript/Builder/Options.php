@@ -24,7 +24,7 @@ class Options {
     /**
      * Sets whether to compress the built ManiaScript.
      * @param boolean $compress The compress state.
-     * @return \ManiaScript\Builder\Options Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setCompress($compress) {
         $this->compress = (boolean) $compress;
@@ -42,7 +42,7 @@ class Options {
     /**
      * Sets whether to surround the built ManiaScript with a script tag.
      * @param boolean $includeScriptTag The include script tag state.
-     * @return \ManiaScript\Builder\Options Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setIncludeScriptTag($includeScriptTag) {
         $this->includeScriptTag = $includeScriptTag;

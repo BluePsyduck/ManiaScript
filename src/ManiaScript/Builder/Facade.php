@@ -6,14 +6,17 @@ use ManiaScript\Builder;
 use ManiaScript\Builder\Directive\Constant;
 use ManiaScript\Builder\Directive\Library;
 use ManiaScript\Builder\Directive\Setting;
+use ManiaScript\Builder\Event\Custom;
 use ManiaScript\Builder\Event\EntrySubmit;
 use ManiaScript\Builder\Event\FirstLoop;
 use ManiaScript\Builder\Event\KeyPress;
 use ManiaScript\Builder\Event\Load;
 use ManiaScript\Builder\Event\Loop;
+use ManiaScript\Builder\Event\MenuNavigation;
 use ManiaScript\Builder\Event\MouseClick;
 use ManiaScript\Builder\Event\MouseOut;
 use ManiaScript\Builder\Event\MouseOver;
+use ManiaScript\Builder\Event\Timer;
 
 /**
  * A facade for the actual builder to simplify adding new content, if desired.
@@ -51,7 +54,7 @@ class Facade {
      * Adds a #Setting directive to the ManiaScript.
      * @param string $name The name of the setting.
      * @param string $value The value of the setting.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addSetting($name, $value) {
         $setting = new Setting();
@@ -65,7 +68,7 @@ class Facade {
      * Adds a #Const directive to the ManiaScript.
      * @param string $name The name of the constant.
      * @param string $value The value of the constant.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addConstant($name, $value) {
         $constant = new Constant();
@@ -77,13 +80,13 @@ class Facade {
 
     /**
      * Adds a #Include directive to the ManiaScript.
-     * @param string $name The name of the library.
+     * @param string $libraryName The name of the library.
      * @param string $alias The alias to be used.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
-    public function addLibrary($name, $alias = '') {
+    public function addLibrary($libraryName, $alias = '') {
         $library = new Library();
-        $library->setName($name)
+        $library->setLibrary($libraryName)
                 ->setAlias($alias);
         $this->builder->addDirective($library);
         return $this;
@@ -93,7 +96,7 @@ class Facade {
      * Adds code to the global scope of the ManiaLink.
      * @param string $code The code.
      * @param int $priority The priority, 0 for most important, bigger for less important.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addGlobalCode($code, $priority = 5) {
         $globalCode = new Code();
@@ -109,7 +112,7 @@ class Facade {
      * @param array $controlIds The Control IDs by which the code should be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addMouseClick($code, $controlIds = array(), $priority = 5, $inline = false) {
         $mouseClick = new MouseClick();
@@ -127,7 +130,7 @@ class Facade {
      * @param array $controlIds The Control IDs by which the code should be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addMouseOver($code, $controlIds = array(), $priority = 5, $inline = false) {
         $mouseOver = new MouseOver();
@@ -146,7 +149,7 @@ class Facade {
      * @param array $controlIds The Control IDs by which the code should be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addMouseOut($code, $controlIds = array(), $priority = 5, $inline = false) {
         $mouseOut = new MouseOut();
@@ -164,7 +167,7 @@ class Facade {
      * @param array $controlIds The Control IDs by which the code should be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addEntrySubmit($code, $controlIds = array(), $priority = 5, $inline = false) {
         $entrySubmit = new EntrySubmit();
@@ -182,7 +185,7 @@ class Facade {
      * @param array $keyCodes The codes of the keys on which the code should be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addKeyPress($code, $keyCodes = array(), $priority = 5, $inline = false) {
         $keyPress = new KeyPress();
@@ -195,11 +198,29 @@ class Facade {
     }
 
     /**
+     * Adds a MenuNavigation event to the ManiaScript.
+     * @param string $code The code to be executed.
+     * @param array $actions The actions on which the code should be executed.
+     * @param int $priority The priority, 0 for most important, bigger for less important.
+     * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
+     * @return $this Implementing fluent interface.
+     */
+    public function addMenuNavigation($code, $actions = array(), $priority = 5, $inline = false) {
+        $menuNavigation = new MenuNavigation();
+        $menuNavigation->setCode($code)
+                       ->setActions($actions)
+                       ->setPriority($priority)
+                       ->setInline($inline);
+        $this->builder->addEvent($menuNavigation);
+        return $this;
+    }
+
+    /**
      * Adds a Load pseudo event to the ManiaScript.
      * @param string $code The code to be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addLoad($code, $priority = 5, $inline = false) {
         $load = new Load();
@@ -215,7 +236,7 @@ class Facade {
      * @param string $code The code to be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addFirstLoop($code, $priority = 5, $inline = false) {
         $firstLoop = new FirstLoop();
@@ -231,7 +252,7 @@ class Facade {
      * @param string $code The code to be executed.
      * @param int $priority The priority, 0 for most important, bigger for less important.
      * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
-     * @return \ManiaScript\Builder\Facade Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addLoop($code, $priority = 5, $inline = false) {
         $loop = new Loop();
@@ -240,6 +261,62 @@ class Facade {
              ->setInline($inline);
         $this->builder->addEvent($loop);
         return $this;
+    }
+
+    /**
+     * Adds a custom event to the ManiaScript.
+     * @param string $name The name of the event.
+     * @param string $code The code to be executed.
+     * @param int $priority The priority, 0 for most important, bigger for less important.
+     * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
+     * @return $this Implementing fluent interface.
+     */
+    public function addCustomEvent($name, $code, $priority = 5, $inline = false) {
+        $custom = new Custom();
+        $custom->setName($name)
+               ->setCode($code)
+               ->setPriority($priority)
+               ->setInline($inline);
+        $this->builder->addEvent($custom);
+        return $this;
+    }
+
+    /**
+     * Returns the ManiaScript code to trigger a custom event.
+     * @param string $name The name of the event to trigger.
+     * @return string The ManiaScript code. Insert it into any other ManiaScript code.
+     */
+    public function getTriggerCustomEventCode($name) {
+        return $this->builder->getTriggerCustomEventCode($name);
+    }
+
+    /**
+     * Adds a timer handler to the ManiaScript.
+     * @param string $name The name of the timer.
+     * @param string $code The code to be executed.
+     * @param int $priority The priority, 0 for most important, bigger for less important.
+     * @param boolean $inline Whether this event is handled inline, i.e. without wrapping function.
+     * @return $this Implementing fluent interface.
+     */
+    public function addTimer($name, $code, $priority = 5, $inline = false) {
+        $timer = new Timer();
+        $timer->setName($name)
+               ->setCode($code)
+               ->setPriority($priority)
+               ->setInline($inline);
+        $this->builder->addEvent($timer);
+        return $this;
+    }
+
+    /**
+     * Returns the ManiaScript code to add a new timer.
+     * @param string $name The name of the timer.
+     * @param int $delay The delay of the timer in milliseconds.
+     * @param bool $replaceExisting Whether to replace existing timers with the same name.
+     * @return string The ManiaScript code. Insert it into any other ManiaScript code.
+     */
+    public function getAddTimerCode($name, $delay, $replaceExisting = false) {
+        return $this->builder->getAddTimerCode($name, $delay, $replaceExisting);
     }
 
     /**

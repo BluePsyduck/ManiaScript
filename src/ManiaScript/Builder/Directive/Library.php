@@ -10,29 +10,46 @@ namespace ManiaScript\Builder\Directive;
  */
 class Library extends AbstractDirective {
     /**
-     * The alias of the library.
+     * The library to include.
      * @var string
      */
-    protected $alias;
+    protected $library;
+
+    /**
+     * Sets the library to include.
+     * @param string $library The library.
+     * @return $this Implementing fluent interface.
+     */
+    public function setLibrary($library)
+    {
+        $this->library = $library;
+        return $this;
+    }
+
+    /**
+     * Returns the library to include.
+     * @return string The alias.
+     */
+    public function getLibrary()
+    {
+        return $this->library;
+    }
 
     /**
      * Sets the alias of the library.
      * @param string $alias The alias.
-     * @return Library Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
-    public function setAlias($alias)
-    {
-        $this->alias = $alias;
-        return $this;
+    public function setAlias($alias) {
+        return $this->setName($alias);
     }
 
     /**
      * Returns the alias of the library.
      * @return string The alias.
      */
-    public function getAlias()
-    {
-        return $this->alias;
+    public function getAlias() {
+        return $this->getName();
     }
 
     /**
@@ -40,11 +57,11 @@ class Library extends AbstractDirective {
      * @return string The directive.
      */
     public function buildCode() {
-        $name = $this->getName();
+        $library = $this->getLibrary();
         $alias = $this->getAlias();
         if (empty($alias)) {
-            $alias = $name;
+            $alias = $library;
         }
-        return '#Include "' . $name . '" as ' . $alias . PHP_EOL;
+        return '#Include "' . $library . '" as ' . $alias . PHP_EOL;
     }
 }

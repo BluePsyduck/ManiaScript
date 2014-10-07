@@ -20,6 +20,7 @@ use ManiaScriptTests\Assets\TestCase;
 class BuilderTest extends TestCase {
     /**
      * Tests the constructor.
+     * @covers \ManiaScript\Builder::__construct
      */
     public function testConstruct() {
         $builder = new Builder();
@@ -29,6 +30,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the getOptions() method.
+     * @covers \ManiaScript\Builder::getOptions
      */
     public function testGetOptions() {
         $builder = new Builder();
@@ -43,16 +45,16 @@ class BuilderTest extends TestCase {
      */
     public function providerAddDirective() {
         $directive1 = new Setting();
-        $directive1->setName('abc')
-                   ->setValue('def');
+        $directive1->setValue('def')
+                   ->setName('abc');
 
         $directive2 = new Constant();
-        $directive2->setName('def')
-                   ->setValue('ghi');
+        $directive2->setValue('ghi')
+                   ->setName('def');
 
         $directive3 = new Library();
-        $directive3->setName('abc')
-                   ->setAlias('jkl');
+        $directive3->setLibrary('jkl')
+                   ->setName('abc');
 
         return array(
             array( // Add directive to empty array.
@@ -78,6 +80,7 @@ class BuilderTest extends TestCase {
      * @param array $expected The expected directives of the builder.
      * @param \ManiaScript\Builder\Directive\AbstractDirective $newDirective The directive to be added.
      * @param array $directives The directives before adding the new one.
+     * @covers \ManiaScript\Builder::addDirective
      * @dataProvider providerAddDirective
      */
     public function testAddDirective($expected, $newDirective, $directives) {
@@ -90,6 +93,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the addGlobalCode() method.
+     * @covers \ManiaScript\Builder::addGlobalCode
      */
     public function testAddGlobalCode() {
         $code = new Code();
@@ -107,6 +111,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the addEvent() method.
+     * @covers \ManiaScript\Builder::addEvent
      */
     public function testAddEvent() {
         $event = new Event();
@@ -128,11 +133,54 @@ class BuilderTest extends TestCase {
     }
 
     /**
+     * Tests the getTriggerCustomEventCode() method.
+     * @covers \ManiaScript\Builder::getTriggerCustomEventCode
+     */
+    public function testGetTriggerCustomEventCode() {
+        $name = 'abc';
+        $expectedResult = '+++abc+++';
+
+        $builder = new Builder();
+        $result = $builder->getTriggerCustomEventCode($name);
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * Provides the data for the getAddTimerCode() test.
+     * @return array The data.
+     */
+    public function provideGetAddTimerCode() {
+        return array(
+            array('__AddTimer("abc", 1337, False);', 'abc', 1337, false),
+            array('__AddTimer("def", 42, True);', 'def', 42, true)
+        );
+    }
+
+    /**
+     * Tests the getAddTimerCode() method.
+     * @param string $expectedResult The expected result.
+     * @param string $name The name to use.
+     * @param int $delay The delay to use.
+     * @param bool $replaceExisting The replace existing flag to use.
+     * @covers \ManiaScript\Builder::getAddTimerCode
+     * @dataProvider provideGetAddTimerCode
+     */
+    public function testGetAddTimerCode($expectedResult, $name, $delay, $replaceExisting) {
+        $builder = new Builder();
+        $this->assertPropertyEquals(false, $builder, 'useTimers');
+        $result = $builder->getAddTimerCode($name, $delay, $replaceExisting);
+        $this->assertEquals($expectedResult, $result);
+        $this->assertPropertyEquals(true, $builder, 'useTimers');
+    }
+
+    /**
      * Tests the build() method.
+     * @covers \ManiaScript\Builder::build
      */
     public function testBuild() {
         $methods = array(
-            'prepareHandlers', 'buildDirectives', 'buildGlobalCode', 'buildMainFunction', 'compress', 'addScriptTag'
+            'prepareHandlers', 'buildDirectives', 'buildInternalCode', 'buildGlobalCode', 'buildMainFunction',
+            'compress', 'addScriptTag'
         );
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
         $builder = $this->getMock('ManiaScript\Builder', $methods);
@@ -148,6 +196,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the getCode() method.
+     * @covers \ManiaScript\Builder::getCode
      */
     public function testGetCode() {
         $expected = 'abc';
@@ -158,6 +207,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the prepareHandlers() method.
+     * @covers \ManiaScript\Builder::prepareHandlers
      */
     public function testPrepareHandlers() {
         /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
@@ -184,6 +234,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the buildDirectives() method.
+     * @covers \ManiaScript\Builder::buildDirectives
      */
     public function testBuildDirectives() {
         /* @var $directive1 \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
@@ -206,7 +257,25 @@ class BuilderTest extends TestCase {
     }
 
     /**
+     * Tests the buildInternalCode() method.
+     * @covers \ManiaScript\Builder::buildInternalCode
+     */
+    public function testBuildInternalCode() {
+        $builder = new Builder();
+        $this->injectProperty($builder, 'useTimers', true)
+             ->injectProperty($builder, 'code', 'abc');
+
+        $result = $this->invokeMethod($builder, 'buildInternalCode');
+        $this->assertEquals($builder, $result);
+
+        $code = $this->extractProperty($builder, 'code');
+        $this->assertContains('abc', $code);
+        $this->assertContains('Void __AddTimer(Text Name, Integer Delay, Boolean ReplacePrevious) {', $code);
+    }
+
+    /**
      * Tests the buildGlobalCode() method.
+     * @covers \ManiaScript\Builder::buildGlobalCode
      */
     public function testBuildGlobalCode() {
         /* @var $code1 \ManiaScript\Builder\Code|\PHPUnit_Framework_MockObject_MockObject */
@@ -256,6 +325,7 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the buildMainFunction() method.
+     * @covers \ManiaScript\Builder::buildMainFunction
      */
     public function testBuildMainFunction() {
         /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
@@ -290,6 +360,7 @@ class BuilderTest extends TestCase {
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $this->invokeMethod($builder, 'buildMainFunction');
         $code = $this->extractProperty($builder, 'code');
+        $this->assertContains('Void __Dummy() {}', $code);
         $this->assertContains('main() {', $code);
         $this->assertContains('abc', $code);
         $this->assertContains('def', $code);
@@ -323,15 +394,19 @@ class BuilderTest extends TestCase {
     ) {
         /* @var $handler \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
         $handler = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler->expects($this->once())
+        $handler->expects($this->any())
                 ->method('getInlineCode')
                 ->will($this->returnValue($resultLoopInline));
 
         /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
         $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
-        $factory->expects($this->once())
+        $factory->expects($this->at(0))
                 ->method('getHandler')
                 ->with('Loop')
+                ->will($this->returnValue($handler));
+        $factory->expects($this->at(1))
+                ->method('getHandler')
+                ->with('Timer')
                 ->will($this->returnValue($handler));
 
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
@@ -438,6 +513,7 @@ class BuilderTest extends TestCase {
      * @param string $expected The expected code.
      * @param string $code The code to be set.
      * @param boolean $optionCompress The compress option.
+     * @covers \ManiaScript\Builder::compress
      * @dataProvider provideCompress
      */
     public function testCompress($expected, $code, $optionCompress) {
@@ -466,6 +542,7 @@ class BuilderTest extends TestCase {
      * @param string $expected The expected code.
      * @param string $code The code to be set.
      * @param boolean $optionIncludeTag The include tag option.
+     * @covers \ManiaScript\Builder::addScriptTag
      * @dataProvider provideAddScriptTag
      */
     public function testAddScriptTag($expected, $code, $optionIncludeTag) {

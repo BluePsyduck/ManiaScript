@@ -18,7 +18,7 @@ class KeyPress extends AbstractEvent {
     /**
      * Sets the Key Codes, this event should listen to. Use the values of the \ManiaScript\Keys class.
      * @param int|array $keyCodes Either a single code as integer, or multiple codes as array.
-     * @return ControlEvent Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function setKeyCodes($keyCodes) {
         if (!is_array($keyCodes)) {

@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class CodeTest extends TestCase {
     /**
      * Tests the setCode() method.
+     * @covers \ManiaScript\Builder\Code::setCode
      */
     public function testSetCode() {
         $expected = 'abc';
@@ -25,6 +26,7 @@ class CodeTest extends TestCase {
 
     /**
      * Tests the getCode() method.
+     * @covers \ManiaScript\Builder\Code::getCode
      */
     public function testGetCode() {
         $expected = 'abc';
@@ -49,6 +51,7 @@ class CodeTest extends TestCase {
      * Tests the setPriority() method.
      * @param int $expected The expected priority.
      * @param mixed $priority The priority to be set.
+     * @covers \ManiaScript\Builder\Code::setPriority
      * @dataProvider provideSetPriority
      */
     public function testSetPriority($expected, $priority) {
@@ -60,6 +63,7 @@ class CodeTest extends TestCase {
 
     /**
      * Tests the getPriority() method.
+     * @covers \ManiaScript\Builder\Code::getPriority
      */
     public function testGetPriority() {
         $expected = 42;

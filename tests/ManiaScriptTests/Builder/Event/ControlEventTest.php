@@ -28,7 +28,8 @@ class ControlEventTest extends TestCase {
     /**
      * Tests the setControlIds() method.
      * @param array $expected The expected value.
-     * @param string|array $controlIds The control IDs to be set.
+     * @param string|array The control IDs to be set.
+     * @covers \ManiaScript\Builder\Event\ControlEvent::setControlIds
      * @dataProvider providerSetControlIds
      */
     public function testSetControlIds($expected, $controlIds) {
@@ -41,6 +42,7 @@ class ControlEventTest extends TestCase {
 
     /**
      * Tests the getControlIds() method.
+     * @covers \ManiaScript\Builder\Event\ControlEvent::getControlIds
      */
     public function testGetControlIds() {
         $expected = array('abc');

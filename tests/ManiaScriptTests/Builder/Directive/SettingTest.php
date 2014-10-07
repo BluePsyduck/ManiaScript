@@ -14,6 +14,7 @@ use ManiaScriptTests\Assets\TestCase;
 class SettingTest extends TestCase {
     /**
      * Tests the setValue() method.
+     * @covers \ManiaScript\Builder\Directive\Setting::setValue
      */
     public function testSetValue() {
         $expected = 'abc';
@@ -25,6 +26,7 @@ class SettingTest extends TestCase {
 
     /**
      * Tests the getValue() method.
+     * @covers \ManiaScript\Builder\Directive\Setting::getValue
      */
     public function testGetValue() {
         $expected = 'abc';
@@ -34,17 +36,18 @@ class SettingTest extends TestCase {
     }
 
     /**
-     * Tests the getCode() method.
+     * Tests the buildCode() method.
+     * @covers \ManiaScript\Builder\Directive\Setting::buildCode
      */
-    public function testGetCode() {
+    public function testBuildCode() {
         /* @var $directive \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
         $directive = $this->getMock('ManiaScript\Builder\Directive\Setting', array('getName', 'getValue'));
         $directive->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('abc'));
+                  ->method('getName')
+                  ->will($this->returnValue('abc'));
         $directive->expects($this->any())
-            ->method('getValue')
-            ->will($this->returnValue('def'));
+                  ->method('getValue')
+                  ->will($this->returnValue('def'));
         $result = $directive->buildCode();
         $this->assertEquals('#Setting abc def' . PHP_EOL, $result);
     }

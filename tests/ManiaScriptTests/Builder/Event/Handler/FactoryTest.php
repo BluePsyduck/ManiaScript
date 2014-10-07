@@ -48,6 +48,7 @@ class FactoryTest extends TestCase {
      * @param int $expectedHandlerCount The number of handlers expected to be known to the factory.
      * @param array $handlers The known handlers to the factory.
      * @param string $name The name of the handler to be requested.
+     * @covers \ManiaScript\Builder\Event\Handler\Factory::getHandler
      * @dataProvider provideGetHandler
      */
     public function testGetHandler($expectedClass, $expectedHandlerCount, $handlers, $name) {
@@ -61,6 +62,7 @@ class FactoryTest extends TestCase {
 
     /**
      * Tests the getHandlerForEvent() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Factory::getHandlerForEvent
      */
     public function testGetHandlerForEvent() {
         $handler = new MouseClickHandler();
@@ -78,6 +80,7 @@ class FactoryTest extends TestCase {
 
     /**
      * Tests the getAllHandlers() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Factory::getAllHandlers
      */
     public function testGetAllHandlers() {
         $handlers = array('abc' => 'def', 'ghi' => 'jkl');
@@ -91,6 +94,7 @@ class FactoryTest extends TestCase {
 
     /**
      * Tests the getAllControlHandlers() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Factory::getAllControlHandlers
      */
     public function testGetAllControlHandlers() {
         $mouseClick = new MouseClickHandler();

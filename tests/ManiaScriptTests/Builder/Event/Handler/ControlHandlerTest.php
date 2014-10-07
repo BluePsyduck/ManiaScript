@@ -16,6 +16,7 @@ use ManiaScriptTests\Assets\TestCase;
 class ControlHandlerTest extends TestCase {
     /**
      * Tests the getEventType() method.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::getEventType
      */
     public function testGetEventType() {
         /* @var $handler \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
@@ -48,14 +49,13 @@ class ControlHandlerTest extends TestCase {
         );
     }
 
-
-
     /**
      * Tests the buildCode() method.
      * @param string $expectType The type to be expected in the inline code.
      * @param string $expectInline Part of the inline code to be expected.
      * @param string $expectGlobal Part of the global code to be expected.
      * @param \ManiaScript\Builder\PriorityQueue $queue The priority queue.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildCode
      * @dataProvider provideBuildCode
      */
     public function testBuildCode($expectType, $expectInline, $expectGlobal, $queue) {
@@ -121,6 +121,7 @@ class ControlHandlerTest extends TestCase {
      * @param string $expected The expected code.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event to be used.
      * @param string $code The code to be returned by buildHandlerFunction().
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildGlobalCodeOfEvent
      * @dataProvider provideBuildGlobalCodeOfEvent
      */
     public function testBuildGlobalCodeOfEvent($expected, $event, $code) {
@@ -163,6 +164,7 @@ class ControlHandlerTest extends TestCase {
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event to be used.
      * @param string $functionCall The result of the build function call.
      * @param string $condition The condition.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildInlineCodeOfEvent
      * @dataProvider provideBuildInlineCodeOfEvent
      */
     public function testBuildInlineCodeOfEvent($expected, $event, $functionCall, $condition) {
@@ -221,6 +223,7 @@ class ControlHandlerTest extends TestCase {
      * Tests the buildCondition() method.
      * @param string $expected The expected condition.
      * @param array $controlIds The Control IDs to be used.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildCondition
      * @dataProvider providerBuildCondition
      */
     public function testBuildCondition($expected, $controlIds) {
@@ -231,5 +234,57 @@ class ControlHandlerTest extends TestCase {
         $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\ControlHandler');
         $result = $this->invokeMethod($handler, 'buildCondition', array($event));
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Tests the buildHandlerFunction() method.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildHandlerFunction
+     */
+    public function testBuildHandlerFunction() {
+        $event = new Event();
+        $event->setCode('abc');
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockForAbstractClass(
+            'ManiaScript\Builder\Event\Handler\ControlHandler',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('getHandlerFunctionName')
+        );
+        $handler->expects($this->once())
+                ->method('getHandlerFunctionName')
+                ->with($event)
+                ->will($this->returnValue('def'));
+
+        $result = $this->invokeMethod($handler, 'buildHandlerFunction', array($event));
+        $this->assertContains('Void def(CMlEvent Event)', $result);
+        $this->assertContains('abc', $result);
+    }
+
+    /**
+     * Tests the buildHandlerFunctionCall() method.
+     * @covers \ManiaScript\Builder\Event\Handler\ControlHandler::buildHandlerFunctionCall
+     */
+    public function testBuildHandlerFunctionCall() {
+        $event = new Event();
+        /* @var $handler \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockForAbstractClass(
+            'ManiaScript\Builder\Event\Handler\ControlHandler',
+            array(),
+            '',
+            true,
+            true,
+            true,
+            array('getHandlerFunctionName')
+        );
+        $handler->expects($this->once())
+                ->method('getHandlerFunctionName')
+                ->with($event)
+                ->will($this->returnValue('abc'));
+        $result = $this->invokeMethod($handler, 'buildHandlerFunctionCall', array($event));
+        $this->assertEquals('abc(Event);' . PHP_EOL, $result);
     }
 }

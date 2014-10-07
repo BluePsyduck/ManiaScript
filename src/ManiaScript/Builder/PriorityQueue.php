@@ -32,7 +32,7 @@ class PriorityQueue implements Iterator {
     /**
      * Adds a new item to the priority queue.
      * @param PriorityQueueItem $item THe item to be added.
-     * @return \ManiaScript\Builder\PriorityQueue Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function add(PriorityQueueItem $item) {
         $priority = $item->getPriority();
@@ -55,7 +55,7 @@ class PriorityQueue implements Iterator {
     /**
      * Merges the items of the priority queue to one single list, paying attention to the priorities. The result is
      * written to the mergedItems property.
-     * @return \ManiaScript\Builder\PriorityQueue Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     protected function mergeItems() {
         ksort($this->items);

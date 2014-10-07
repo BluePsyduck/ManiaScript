@@ -46,7 +46,7 @@ abstract class AbstractHandler {
     /**
      * Adds a new event ot the handler.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
-     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public function addEvent(AbstractEvent $event) {
         $this->events->add($event);
@@ -55,7 +55,7 @@ abstract class AbstractHandler {
 
     /**
      * Builds the code of the events.
-     * @return \ManiaScript\Builder\Event\Handler\AbstractHandler Implementing fluent interface.
+     * @return $this Implementing fluent interface.
      */
     public abstract function buildCode();
 
@@ -97,7 +97,7 @@ abstract class AbstractHandler {
      * @return string THe handler function.
      */
     protected function buildHandlerFunction($event) {
-        return 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL
+        return 'Void ' . $this->getHandlerFunctionName($event) . '() {' . PHP_EOL
             . $event->getCode() . PHP_EOL
             . '}' . PHP_EOL;
     }
