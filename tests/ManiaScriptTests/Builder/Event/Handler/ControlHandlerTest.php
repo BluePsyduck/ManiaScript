@@ -222,7 +222,19 @@ class ControlHandlerTest extends TestCase {
             array(
                 'Event.ControlId == "abc" || Event.ControlId == "def"',
                 array('abc', 'def')
-            )
+            ),
+            array(
+                'Event.Control.HasClass("abc")',
+                array('.abc')
+            ),
+            array(
+                'Event.Control.HasClass("abc") || Event.Control.HasClass("def")',
+                array('.abc', '.def')
+            ),
+            array(
+                'Event.ControlId == "abc" || Event.Control.HasClass("def")',
+                array('abc', '.def')
+            ),
         );
     }
 

@@ -91,7 +91,12 @@ abstract class ControlHandler extends AbstractHandler {
     protected function buildCondition($event) {
         $conditions = array();
         foreach ($event->getControlIds() as $control) {
-            $conditions[$control] = 'Event.ControlId == "' . $control . '"';
+            if (substr($control, 0, 1) === '.') {
+                $condition = 'Event.Control.HasClass("' . substr($control, 1) . '")';
+            } else {
+                $condition = 'Event.ControlId == "' . $control . '"';
+            }
+            $conditions[$control] = $condition;
         }
 
         $result = '';
