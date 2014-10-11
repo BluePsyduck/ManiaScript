@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScript\Builder\Event\Handler\Factory;
 use ManiaScript\Builder\Event\Handler\MouseClick as MouseClickHandler;
 use ManiaScript\Builder\Event\MouseClick as MouseClickEvent;
@@ -15,6 +16,17 @@ use stdClass;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 class FactoryTest extends TestCase {
+
+    /**
+     * Tests the __construct() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Factory::__construct
+     */
+    public function testConstruct() {
+        $builder = new Builder();
+        $factory = new Factory($builder);
+        $this->assertPropertyEquals($builder, $factory, 'builder');
+    }
+
     /**
      * Provides the data for the getHandler() test.
      * @return array The data.
@@ -30,13 +42,13 @@ class FactoryTest extends TestCase {
             array(
                 'ManiaScript\Builder\Event\Handler\MouseClick',
                 1,
-                array('MouseClick' => new MouseClickHandler()),
+                array('MouseClick' => new MouseClickHandler(new Builder())),
                 'MouseClick'
             ),
             array(
                 'ManiaScript\Builder\Event\Handler\MouseOver',
                 2,
-                array('MouseClick' => new MouseClickHandler()),
+                array('MouseClick' => new MouseClickHandler(new Builder())),
                 'MouseOver'
             )
         );
@@ -52,7 +64,7 @@ class FactoryTest extends TestCase {
      * @dataProvider provideGetHandler
      */
     public function testGetHandler($expectedClass, $expectedHandlerCount, $handlers, $name) {
-        $factory = new Factory();
+        $factory = new Factory(new Builder());
         $this->injectProperty($factory, 'instances', $handlers);
         $result = $factory->getHandler($name);
         $this->assertInstanceOf($expectedClass, $result);
@@ -65,10 +77,13 @@ class FactoryTest extends TestCase {
      * @covers \ManiaScript\Builder\Event\Handler\Factory::getHandlerForEvent
      */
     public function testGetHandlerForEvent() {
-        $handler = new MouseClickHandler();
+        $handler = new MouseClickHandler(new Builder());
 
         /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandler'))
+                        ->setConstructorArgs(array(new Builder()))
+                        ->getMock();
         $factory->expects($this->once())
                 ->method('getHandler')
                 ->with('MouseClick')
@@ -86,7 +101,7 @@ class FactoryTest extends TestCase {
         $handlers = array('abc' => 'def', 'ghi' => 'jkl');
         $expected = array('def', 'jkl');
 
-        $factory = new Factory();
+        $factory = new Factory(new Builder());
         $this->injectProperty($factory, 'instances', $handlers);
         $result = $factory->getAllHandlers();
         $this->assertEquals($expected, $result);
@@ -97,14 +112,14 @@ class FactoryTest extends TestCase {
      * @covers \ManiaScript\Builder\Event\Handler\Factory::getAllControlHandlers
      */
     public function testGetAllControlHandlers() {
-        $mouseClick = new MouseClickHandler();
+        $mouseClick = new MouseClickHandler(new Builder());
         $handlers = array(
             'abc' => $mouseClick,
             'def' => new stdClass()
         );
         $expected = array($mouseClick);
 
-        $factory = new Factory();
+        $factory = new Factory(new Builder());
         $this->injectProperty($factory, 'instances', $handlers);
         $result = $factory->getAllControlHandlers();
         $this->assertEquals($expected, $result);

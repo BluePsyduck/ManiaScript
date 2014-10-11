@@ -40,7 +40,8 @@ class Timer extends AbstractHandler {
      * @return string The internal code.
      */
     protected function buildInlineCode() {
-        $result = 'foreach (Time => Name in ' . $this->getTimersVariableName() . ') {' . PHP_EOL
+        $variableName = $this->getTimersVariableName();
+        $result = 'foreach (Time => Name in ' . $variableName . ') {' . PHP_EOL
             . '    if (Time <= CurrentTime) {' . PHP_EOL
             . '        switch (Name) {' . PHP_EOL;
 
@@ -56,7 +57,7 @@ class Timer extends AbstractHandler {
         }
 
         $result .= '        }' . PHP_EOL
-            . '        declare Temp = ' . $this->getTimersVariableName() . '.removekey(Time);' . PHP_EOL
+            . '        declare Temp = ' . $variableName . '.removekey(Time);' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL;
         return $result;

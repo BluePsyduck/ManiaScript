@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScript\Builder\Event\KeyPress as KeyPressEvent;
 use ManiaScript\Builder\Event\Handler\KeyPress as KeyPressHandler;
 use ManiaScriptTests\Assets\TestCase;
@@ -37,7 +38,7 @@ class KeyPressTest extends TestCase {
         $event = new KeyPressEvent();
         $this->injectProperty($event, 'keyCodes', $keyCodes);
 
-        $handler = new KeyPressHandler();
+        $handler = new KeyPressHandler(new Builder());
         $result = $this->invokeMethod($handler, 'buildCondition', array($event));
         $this->assertEquals($expected, $result);
     }

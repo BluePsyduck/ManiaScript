@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScriptTests\Assets\TestCase;
 use ManiaScript\Builder\Event\MenuNavigation as MenuNavigationEvent;
 use ManiaScript\Builder\Event\Handler\MenuNavigation as MenuNavigationHandler;
@@ -40,7 +41,7 @@ class MenuNavigationTest extends TestCase {
         $event = new MenuNavigationEvent();
         $this->injectProperty($event, 'actions', $actions);
 
-        $handler = new MenuNavigationHandler();
+        $handler = new MenuNavigationHandler(new Builder());
         $result = $this->invokeMethod($handler, 'buildCondition', array($event));
         $this->assertEquals($expected, $result);
     }

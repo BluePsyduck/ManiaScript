@@ -3,6 +3,7 @@
 namespace ManiaScriptTests\Builder\Event\Handler;
 
 use ManiaScript\Builder;
+use ManiaScript\Builder\Code;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;
 
@@ -14,19 +15,43 @@ use ManiaScriptTests\Assets\TestCase;
  */
 class AbstractHandlerTest extends TestCase {
     /**
+     * The builder instance used in the mocked handler.
+     * @var \ManiaScript\Builder
+     */
+    protected $builder;
+
+    /**
+     * The mocked abstract handler.
+     * @var \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $mockedHandler;
+
+    /**
+     * Sets up the tests case.
+     */
+    protected function setUp() {
+        $this->builder = new Builder();
+        $this->builder->getOptions()->setFunctionPrefix('foo');
+        $this->mockedHandler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                                    ->setConstructorArgs(array($this->builder))
+                                    ->getMockForAbstractClass();
+    }
+
+    /**
+     * Tears down the tests case.
+     */
+    protected function tearDown() {
+        $this->mockedHandler = null;
+        $this->builder = null;
+    }
+
+    /**
      * Tests the constructor.
      * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::__construct
      */
     public function testConstruct() {
-        $builder = new Builder();
-
-        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
-                        ->setConstructorArgs(array($builder))
-                        ->getMockForAbstractClass();
-
-        $this->assertPropertyEquals($builder, $handler, 'builder');
-        $this->assertPropertyInstanceOf('ManiaScript\Builder\PriorityQueue', $handler, 'events');
+        $this->assertPropertyEquals($this->builder, $this->mockedHandler, 'builder');
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\PriorityQueue', $this->mockedHandler, 'events');
     }
 
     /**
@@ -36,39 +61,110 @@ class AbstractHandlerTest extends TestCase {
     public function testAddEvent() {
         $expected = new Event();
 
-        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\AbstractHandler');
-
         /* @var $queue \ManiaScript\Builder\PriorityQueue|\PHPUnit_Framework_MockObject_MockObject */
-        $queue = $this->getMock('ManiaScript\Builder\PriorityQueue', array('add'));
+        $queue = $this->getMockBuilder('ManiaScript\Builder\PriorityQueue')
+                      ->setMethods(array('add'))
+                      ->getMock();
         $queue->expects($this->once())
               ->method('add')
               ->with($expected);
-        $this->injectProperty($handler, 'events', $queue);
+        $this->injectProperty($this->mockedHandler, 'events', $queue);
 
-        $handler->addEvent($expected);
+        $result = $this->mockedHandler->addEvent($expected);
+        $this->assertEquals($this->mockedHandler, $result);
     }
 
     /**
      * Tests the prepare() method.
-     * @covers Class::prepare
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::prepare
      */
     public function testPrepare() {
-        $this->markTestIncomplete('Test for prepare() not implemented.');
+        $inlineCode = 'abc';
+        $globalCode = 'def';
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setMethods(array('buildInlineCode', 'buildGlobalCode', 'addGlobalCode'))
+                        ->setConstructorArgs(array($this->builder))
+                        ->getMockForAbstractClass();
+        $handler->expects($this->once())
+                ->method('buildInlineCode')
+                ->will($this->returnValue($inlineCode));
+        $handler->expects($this->once())
+                ->method('buildGlobalCode')
+                ->will($this->returnValue($globalCode));
+        $handler->expects($this->once())
+                ->method('addGlobalCode')
+                ->with($globalCode, PHP_INT_MAX)
+                ->will($this->returnSelf());
+
+        $handler->prepare();
+        $this->assertPropertyEquals($inlineCode, $handler, 'inlineCode');
     }
 
     /**
-     * Tests the getGlobalCode() method.
-     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::getGlobalCode
+     * Tests the buildInlineCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::buildInlineCode
      */
-    public function testGetGlobalCode() {
-        $expected = 'abc';
+    public function testBuildInlineCode() {
+        $result = $this->invokeMethod($this->mockedHandler, 'buildInlineCode');
+        $this->assertEquals('', $result);
+    }
+
+    /**
+     * Tests the buildGlobalCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::buildGlobalCode
+     */
+    public function testBuildGlobalCode() {
+        $result = $this->invokeMethod($this->mockedHandler, 'buildGlobalCode');
+        $this->assertEquals('', $result);
+    }
+
+    /**
+     * Provides the data for the addGlobalCode() test.
+     * @return array The data.
+     */
+    public function provideAddGlobalCode() {
+        $code = new Code();
+        $code->setCode('abc')
+             ->setPriority(42);
+
+        return array(
+            array(null, '', 1337),
+            array($code, 'abc', 42)
+        );
+    }
+
+    /**
+     * Tests the addGlobalCode() method.
+     * @param \ManiaScript\Builder\Code|null $expectCode The code to expect in the addGlobalCode() method call.
+     * @param string $globalCode The global code to use.
+     * @param int $priority The priority to use.
+     * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::addGlobalCode
+     * @dataProvider provideAddGlobalCode
+     */
+    public function testAddGlobalCode($expectCode, $globalCode, $priority) {
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('addGlobalCode'))
+                        ->getMock();
+        if (is_null($expectCode)) {
+            $builder->expects($this->never())
+                    ->method('addGlobalCode');
+        } else {
+            $builder->expects($this->once())
+                    ->method('addGlobalCode')
+                    ->with($expectCode)
+                    ->will($this->returnSelf());
+        }
 
         /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\AbstractHandler');
-        $this->injectProperty($handler, 'globalCode', $expected);
-        $result = $handler->getGlobalCode();
-        $this->assertEquals($expected, $result);
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setConstructorArgs(array($builder))
+                        ->getMockForAbstractClass();
+
+        $result = $this->invokeMethod($handler, 'addGlobalCode', array($globalCode, $priority));
+        $this->assertEquals($handler, $result);
     }
 
     /**
@@ -77,11 +173,8 @@ class AbstractHandlerTest extends TestCase {
      */
     public function testGetInlineCode() {
         $expected = 'abc';
-
-        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\AbstractHandler');
-        $this->injectProperty($handler, 'inlineCode', $expected);
-        $result = $handler->getInlineCode();
+        $this->injectProperty($this->mockedHandler, 'inlineCode', $expected);
+        $result = $this->mockedHandler->getInlineCode();
         $this->assertEquals($expected, $result);
     }
 
@@ -97,21 +190,21 @@ class AbstractHandlerTest extends TestCase {
 
         return array(
             array( // No events known
-                '__HandleEvent0',
-                array('__HandleEvent0' => $event1),
+                'foo_HandleEvent0',
+                array('foo_HandleEvent0' => $event1),
                 array(),
                 $event1
             ),
             array( // Events known, get name for new one
-                '__HandleEvent1',
-                array('__HandleEvent0' => $event1, '__HandleEvent1' => $event2),
-                array('__HandleEvent0' => $event1),
+                'foo_HandleEvent1',
+                array('foo_HandleEvent0' => $event1, 'foo_HandleEvent1' => $event2),
+                array('foo_HandleEvent0' => $event1),
                 $event2
             ),
             array( // Get name of already known event
-                '__HandleEvent0',
-                array('__HandleEvent0' => $event1, '__HandleEvent1' => $event2),
-                array('__HandleEvent0' => $event1, '__HandleEvent1' => $event2),
+                'foo_HandleEvent0',
+                array('foo_HandleEvent0' => $event1, 'foo_HandleEvent1' => $event2),
+                array('foo_HandleEvent0' => $event1, 'foo_HandleEvent1' => $event2),
                 $event1
             )
         );
@@ -127,13 +220,10 @@ class AbstractHandlerTest extends TestCase {
      * @dataProvider providerGetHandlerFunctionName
      */
     public function testGetHandlerFunctionName($expectedName, $expectedArray, $array, $event) {
-        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\AbstractHandler');
+        $this->injectProperty($this->mockedHandler, 'handlerFunctionNames', $array);
+        $result = $this->invokeMethod($this->mockedHandler, 'getHandlerFunctionName', array($event));
 
-        $this->injectProperty($handler, 'handlerFunctionNames', $array);
-        $result = $this->invokeMethod($handler, 'getHandlerFunctionName', array($event));
-
-        $this->assertPropertyEquals($expectedArray, $handler, 'handlerFunctionNames');
+        $this->assertPropertyEquals($expectedArray, $this->mockedHandler, 'handlerFunctionNames');
         $this->assertEquals($expectedName, $result);
     }
 
@@ -146,19 +236,14 @@ class AbstractHandlerTest extends TestCase {
         $event->setCode('abc');
 
         /* @var $handler \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass(
-            'ManiaScript\Builder\Event\Handler\AbstractHandler',
-            array(),
-            '',
-            true,
-            true,
-            true,
-            array('getHandlerFunctionName')
-        );
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setMethods(array('getHandlerFunctionName'))
+                        ->setConstructorArgs(array($this->builder))
+                        ->getMockForAbstractClass();
         $handler->expects($this->once())
-            ->method('getHandlerFunctionName')
-            ->with($event)
-            ->will($this->returnValue('def'));
+                ->method('getHandlerFunctionName')
+                ->with($event)
+                ->will($this->returnValue('def'));
 
         $result = $this->invokeMethod($handler, 'buildHandlerFunction', array($event));
         $this->assertContains('Void def()', $result);
@@ -172,15 +257,11 @@ class AbstractHandlerTest extends TestCase {
     public function testBuildHandlerFunctionCall() {
         $event = new Event();
         /* @var $handler \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass(
-            'ManiaScript\Builder\Event\Handler\AbstractHandler',
-            array(),
-            '',
-            true,
-            true,
-            true,
-            array('getHandlerFunctionName')
-        );
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setMethods(array('getHandlerFunctionName'))
+                        ->setConstructorArgs(array($this->builder))
+                        ->getMockForAbstractClass();
+
         $handler->expects($this->once())
                 ->method('getHandlerFunctionName')
                 ->with($event)

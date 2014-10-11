@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScript\Builder\PriorityQueue;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;
@@ -13,11 +14,12 @@ use ManiaScriptTests\Assets\TestCase;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 class PseudoHandlerTest extends TestCase {
+
     /**
-     * Tests the buildCode() method.
-     * @covers \ManiaScript\Builder\Event\Handler\PseudoHandler::buildCode
+     * Tests the buildInlineCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\PseudoHandler::buildInlineCode
      */
-    public function testBuildCode() {
+    public function testBuildInlineCode() {
         $event1 = new Event();
         $event1->setCode('abc');
         $event2 = new Event();
@@ -29,27 +31,48 @@ class PseudoHandlerTest extends TestCase {
               ->add($event2);
 
         /* @var $handler \ManiaScript\Builder\Event\Handler\PseudoHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMock(
-            'ManiaScript\Builder\Event\Handler\PseudoHandler',
-            array('buildHandlerFunction', 'buildHandlerFunctionCall')
-        );
-        $handler->expects($this->once())
-                ->method('buildHandlerFunction')
-                ->with($event1)
-                ->will($this->returnValue('ghi'));
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\PseudoHandler')
+                        ->setMethods(array('buildHandlerFunctionCall'))
+                        ->setConstructorArgs(array(new Builder()))
+                        ->getMockForAbstractClass();
         $handler->expects($this->once())
                 ->method('buildHandlerFunctionCall')
                 ->with($event1)
                 ->will($this->returnValue('jkl'));
 
         $this->injectProperty($handler, 'events', $queue);
-        $result = $handler->buildCode();
-        $this->assertEquals($handler, $result);
+        $result = $this->invokeMethod($handler, 'buildInlineCode');
+        $this->assertContains('def', $result);
+        $this->assertContains('jkl', $result);
+    }
 
-        $globalCode = $this->extractProperty($handler, 'globalCode');
-        $inlineCode = $this->extractProperty($handler, 'inlineCode');
-        $this->assertContains('def', $inlineCode);
-        $this->assertContains('ghi', $globalCode);
-        $this->assertContains('jkl', $inlineCode);
+    /**
+     * Tests the buildGlobalCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\PseudoHandler::buildGlobalCode
+     */
+    public function testBuildGlobalCode() {
+        $event1 = new Event();
+        $event1->setCode('abc');
+        $event2 = new Event();
+        $event2->setCode('def')
+               ->setInline(true);
+
+        $queue = new PriorityQueue();
+        $queue->add($event1)
+              ->add($event2);
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\PseudoHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\PseudoHandler')
+                        ->setMethods(array('buildHandlerFunction'))
+                        ->setConstructorArgs(array(new Builder()))
+                        ->getMockForAbstractClass();
+        $handler->expects($this->once())
+                ->method('buildHandlerFunction')
+                ->with($event1)
+                ->will($this->returnValue('ghi'));
+
+        $this->injectProperty($handler, 'events', $queue);
+        $result = $this->invokeMethod($handler, 'buildGlobalCode');
+        $this->assertContains('ghi', $result);
     }
 }

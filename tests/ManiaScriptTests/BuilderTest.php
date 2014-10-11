@@ -24,8 +24,9 @@ class BuilderTest extends TestCase {
      */
     public function testConstruct() {
         $builder = new Builder();
-        $result = $this->extractProperty($builder, 'options');
-        $this->assertInstanceOf('ManiaScript\Builder\Options', $result);
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\Options', $builder, 'options');
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\Event\Handler\Factory', $builder, 'eventHandlerFactory');
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\PriorityQueue', $builder, 'globalCodes');
     }
 
     /**
@@ -98,7 +99,10 @@ class BuilderTest extends TestCase {
     public function testAddGlobalCode() {
         $code = new Code();
 
-        $queue = $this->getMock('ManiaScript\Builder\PriorityQueue', array('add'));
+        /* @var $queue \ManiaScript\Builder\PriorityQueue|\PHPUnit_Framework_MockObject_MockObject */
+        $queue = $this->getMockBuilder('ManiaScript\Builder\PriorityQueue')
+                      ->setMethods(array('add'))
+                      ->getMock();
         $queue->expects($this->once())
               ->method('add')
               ->with($code);
@@ -115,19 +119,28 @@ class BuilderTest extends TestCase {
      */
     public function testAddEvent() {
         $event = new Event();
+        $builder = new Builder();
 
-        $factory = $this->getMock('stdClass', array('getHandlerForEvent', 'addEvent'));
+        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setMethods(array('addEvent'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMockForAbstractClass();
+        $handler->expects($this->once())
+                ->method('addEvent')
+                ->with($event)
+                ->will($this->returnSelf());
+
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandlerForEvent'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
         $factory->expects($this->any())
                 ->method('getHandlerForEvent')
                 ->with($event)
-                ->will($this->returnSelf());
-        $factory->expects($this->once())
-                ->method('addEvent')
-                ->with($event);
+                ->will($this->returnValue($handler));
 
-        $builder = new Builder();
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
-
         $result = $builder->addEvent($event);
         $this->assertEquals($builder, $result);
     }
@@ -166,11 +179,35 @@ class BuilderTest extends TestCase {
      * @dataProvider provideGetAddTimerCode
      */
     public function testGetAddTimerCode($expectedResult, $name, $delay, $replaceExisting) {
+        $name = 'abc';
+        $delay = 1337;
+        $replaceExisting = true;
+        $expectedResult = 'def';
         $builder = new Builder();
-        $this->assertPropertyEquals(false, $builder, 'useTimers');
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Timer|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Timer')
+                        ->setMethods(array('getAddTimerCode'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
+        $handler->expects($this->once())
+                ->method('getAddTimerCode')
+                ->with($name, $delay, $replaceExisting)
+                ->will($this->returnValue($expectedResult));
+
+        /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandler'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
+        $factory->expects($this->once())
+                ->method('getHandler')
+                ->with('Timer')
+                ->will($this->returnValue($handler));
+
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $result = $builder->getAddTimerCode($name, $delay, $replaceExisting);
         $this->assertEquals($expectedResult, $result);
-        $this->assertPropertyEquals(true, $builder, 'useTimers');
     }
 
     /**
@@ -179,11 +216,12 @@ class BuilderTest extends TestCase {
      */
     public function testBuild() {
         $methods = array(
-            'prepareHandlers', 'buildDirectives', 'buildInternalCode', 'buildGlobalCode', 'buildMainFunction',
-            'compress', 'addScriptTag'
+            'prepareHandlers', 'buildDirectives', 'buildGlobalCode', 'buildMainFunction', 'compress', 'addScriptTag'
         );
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMock('ManiaScript\Builder', $methods);
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods($methods)
+                        ->getMock();
         foreach ($methods as $method) {
             $builder->expects($this->once())
                     ->method($method)
@@ -210,23 +248,35 @@ class BuilderTest extends TestCase {
      * @covers \ManiaScript\Builder::prepareHandlers
      */
     public function testPrepareHandlers() {
-        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('buildCode'));
-        $handler1->expects($this->once())
-                 ->method('buildCode');
+        $builder = new Builder();
 
-        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('buildCode'));
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                         ->setMethods(array('prepare'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
+        $handler1->expects($this->once())
+                 ->method('prepare')
+                 ->will($this->returnSelf());
+
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                         ->setMethods(array('prepare'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
         $handler2->expects($this->once())
-                 ->method('buildCode');
+                 ->method('prepare')
+                 ->will($this->returnSelf());
 
         /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllHandlers'));
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getAllHandlers'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
         $factory->expects($this->once())
                 ->method('getAllHandlers')
                 ->will($this->returnValue(array($handler1, $handler2)));
 
-        $builder = new Builder();
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $result = $this->invokeMethod($builder, 'prepareHandlers');
         $this->assertEquals($builder, $result);
@@ -257,23 +307,6 @@ class BuilderTest extends TestCase {
     }
 
     /**
-     * Tests the buildInternalCode() method.
-     * @covers \ManiaScript\Builder::buildInternalCode
-     */
-    public function testBuildInternalCode() {
-        $builder = new Builder();
-        $this->injectProperty($builder, 'useTimers', true)
-             ->injectProperty($builder, 'code', 'abc');
-
-        $result = $this->invokeMethod($builder, 'buildInternalCode');
-        $this->assertEquals($builder, $result);
-
-        $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('abc', $code);
-        $this->assertContains('Void __AddTimer(Text Name, Integer Delay, Boolean ReplacePrevious) {', $code);
-    }
-
-    /**
      * Tests the buildGlobalCode() method.
      * @covers \ManiaScript\Builder::buildGlobalCode
      */
@@ -290,27 +323,8 @@ class BuilderTest extends TestCase {
               ->method('getCode')
               ->will($this->returnValue('def'));
 
-        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getGlobalCode'));
-        $handler1->expects($this->once())
-                 ->method('getGlobalCode')
-                 ->will($this->returnValue('ghi'));
-
-        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getGlobalCode'));
-        $handler2->expects($this->once())
-                 ->method('getGlobalCode')
-                 ->will($this->returnValue('jkl'));
-
-        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllHandlers'));
-        $factory->expects($this->once())
-            ->method('getAllHandlers')
-            ->will($this->returnValue(array($handler1, $handler2)));
-
         $builder = new Builder();
-        $this->injectProperty($builder, 'globalCodes', array($code1, $code2))
-             ->injectProperty($builder, 'eventHandlerFactory', $factory);
+        $this->injectProperty($builder, 'globalCodes', array($code1, $code2));
 
         $result = $this->invokeMethod($builder, 'buildGlobalCode');
         $this->assertEquals($builder, $result);
@@ -318,8 +332,6 @@ class BuilderTest extends TestCase {
         $code = $this->extractProperty($builder, 'code');
         $this->assertContains('abc', $code);
         $this->assertContains('def', $code);
-        $this->assertContains('ghi', $code);
-        $this->assertContains('jkl', $code);
     }
 
 
@@ -328,27 +340,6 @@ class BuilderTest extends TestCase {
      * @covers \ManiaScript\Builder::buildMainFunction
      */
     public function testBuildMainFunction() {
-        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler1->expects($this->once())
-                 ->method('getInlineCode')
-                 ->will($this->returnValue('abc'));
-
-        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
-        $handler2->expects($this->once())
-                 ->method('getInlineCode')
-                 ->will($this->returnValue('def'));
-
-        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
-        $factory->expects($this->any())
-                ->method('getHandler')
-                ->will($this->returnValueMap(array(
-                    array('Load', $handler1),
-                    array('FirstLoop', $handler2),
-                )));
-
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
         $builder = $this->getMockBuilder('ManiaScript\Builder')
                         ->setMethods(array('buildEventLoop'))
@@ -356,11 +347,42 @@ class BuilderTest extends TestCase {
         $builder->expects($this->once())
                 ->method('buildEventLoop')
                 ->will($this->returnValue('ghi'));
+        $builder->getOptions()->setFunctionPrefix('foo');
+
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                         ->setMethods(array('getInlineCode'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
+        $handler1->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('abc'));
+
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                         ->setMethods(array('getInlineCode'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
+        $handler2->expects($this->once())
+                 ->method('getInlineCode')
+                 ->will($this->returnValue('def'));
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandler'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
+        $factory->expects($this->any())
+                ->method('getHandler')
+                ->will($this->returnValueMap(array(
+                    array('Load', $handler1),
+                    array('FirstLoop', $handler2),
+                )));
 
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $this->invokeMethod($builder, 'buildMainFunction');
         $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('Void __Dummy() {}', $code);
+        $this->assertContains('Void foo_Dummy() {}', $code);
         $this->assertContains('main() {', $code);
         $this->assertContains('abc', $code);
         $this->assertContains('def', $code);
@@ -392,14 +414,28 @@ class BuilderTest extends TestCase {
     public function testBuildEventLoop(
         $expectedStrings, $notExpectedStrings, $resultLoopInline, $resultControlHandlerLoop
     ) {
-        /* @var $handler \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildControlHandlerLoop'))
+                        ->getMock();
+        $builder->expects($this->once())
+                ->method('buildControlHandlerLoop')
+                ->will($this->returnValue($resultControlHandlerLoop));
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                         ->setMethods(array('getInlineCode'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
         $handler->expects($this->any())
                 ->method('getInlineCode')
                 ->will($this->returnValue($resultLoopInline));
 
         /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getHandler'));
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandler'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
         $factory->expects($this->at(0))
                 ->method('getHandler')
                 ->with('Loop')
@@ -409,13 +445,6 @@ class BuilderTest extends TestCase {
                 ->with('Timer')
                 ->will($this->returnValue($handler));
 
-        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMockBuilder('ManiaScript\Builder')
-                        ->setMethods(array('buildControlHandlerLoop'))
-                        ->getMock();
-        $builder->expects($this->once())
-                ->method('buildControlHandlerLoop')
-                ->will($this->returnValue($resultControlHandlerLoop));
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
 
         $result = $this->invokeMethod($builder, 'buildEventLoop');
@@ -469,28 +498,35 @@ class BuilderTest extends TestCase {
      * @covers \ManiaScript\Builder::buildControlHandlerCases
      */
     public function testBuildControlHandlerCases() {
-        /* @var $handler1 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler1 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        $builder = new Builder();
+
+        /* @var $handler1 \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler1 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\ControlHandler')
+                         ->setMethods(array('getInlineCode'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
         $handler1->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('abc'));
 
-        /* @var $handler2 \ManiaScript\Builder\Event\Handler\MouseClick|\PHPUnit_Framework_MockObject_MockObject */
-        $handler2 = $this->getMock('ManiaScript\Builder\Event\Handler\MouseClick', array('getInlineCode'));
+        /* @var $handler2 \ManiaScript\Builder\Event\Handler\ControlHandler|\PHPUnit_Framework_MockObject_MockObject */
+        $handler2 = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\ControlHandler')
+                         ->setMethods(array('getInlineCode'))
+                         ->setConstructorArgs(array($builder))
+                         ->getMockForAbstractClass();
         $handler2->expects($this->once())
                  ->method('getInlineCode')
                  ->will($this->returnValue('def'));
 
         /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
-        $factory = $this->getMock('ManiaScript\Builder\Event\Handler\Factory', array('getAllControlHandlers'));
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getAllControlHandlers'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
         $factory->expects($this->once())
                 ->method('getAllControlHandlers')
                 ->will($this->returnValue(array($handler1, $handler2)));
 
-        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMockBuilder('ManiaScript\Builder')
-                        ->setMethods(array('buildControlHandlerLoop'))
-                        ->getMock();
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
 
         $result = $this->invokeMethod($builder, 'buildControlHandlerCases');

@@ -67,4 +67,28 @@ class OptionsTest extends TestCase {
         $this->injectProperty($options, 'includeScriptTag', $expected);
         $this->assertEquals($expected, $options->getIncludeScriptTag());
     }
+
+    /**
+     * Tests the setFunctionPrefix() method.
+     * @covers \ManiaScript\Builder\Options::setFunctionPrefix
+     */
+    public function testSetFunctionPrefix() {
+        $expected = 'abc';
+        $options = new Options();
+        $result = $options->setFunctionPrefix($expected);
+        $this->assertEquals($options, $result);
+        $this->assertPropertyEquals($expected, $options, 'functionPrefix');
+    }
+
+    /**
+     * Tests the getFunctionPrefix() method.
+     * @covers \ManiaScript\Builder\Options::getFunctionPrefix
+     */
+    public function testGetFunctionPrefix() {
+        $expected = 'abc';
+        $options = new Options();
+        $this->injectProperty($options, 'functionPrefix', $expected);
+        $result = $options->getFunctionPrefix();
+        $this->assertEquals($expected, $result);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScript\Builder\Event\Custom as CustomEvent;
 use ManiaScript\Builder\Event\Handler\Custom as CustomHandler;
 use ManiaScriptTests\Assets\TestCase;
@@ -14,10 +15,10 @@ use ManiaScriptTests\Assets\TestCase;
  */
 class CustomTest extends TestCase {
     /**
-     * Tests the buildCode() method.
-     * @covers \ManiaScript\Builder\Event\Handler\Custom::buildCode
+     * Tests the buildGlobalCode() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Custom::buildGlobalCode
      */
-    public function testBuildCode() {
+    public function testBuildGlobalCode() {
         $event1 = new CustomEvent();
         $event1->setName('abc');
         $event2 = new CustomEvent();
@@ -26,6 +27,7 @@ class CustomTest extends TestCase {
         /* @var $handler \ManiaScript\Builder\Event\Handler\Custom|\PHPUnit_Framework_MockObject_MockObject */
         $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Custom')
                         ->setMethods(array('buildCodeOfEvent'))
+                        ->setConstructorArgs(array(new Builder()))
                         ->getMock();
         $handler->expects($this->at(0))
                 ->method('buildCodeOfEvent')
@@ -37,10 +39,8 @@ class CustomTest extends TestCase {
                 ->will($this->returnValue('jkl'));
 
         $this->injectProperty($handler, 'events', array($event1, $event2));
-        $result = $handler->buildCode();
-        $this->assertEquals($handler, $result);
-        $this->assertPropertyEquals('', $handler, 'inlineCode');
-        $this->assertPropertyEquals('ghijkl', $handler, 'globalCode');
+        $result = $this->invokeMethod($handler, 'buildGlobalCode');
+        $this->assertEquals('ghijkl', $result);
     }
 
     /**
@@ -77,7 +77,8 @@ EOT;
      * @dataProvider provideBuildCodeOfEvent
      */
     public function testBuildCodeOfEvent($expectedResult, $event) {
-        $handler = new CustomHandler();
+        $builder = new Builder();
+        $handler = new CustomHandler($builder);
         $result = $this->invokeMethod($handler, 'buildCodeOfEvent', array($event));
         $this->assertEquals($expectedResult, $result);
     }

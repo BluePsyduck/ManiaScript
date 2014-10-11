@@ -8,7 +8,7 @@ namespace ManiaScript\Builder\Event\Handler;
  * @author Marcel <marcel@mania-community.de>
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
-class PseudoHandler extends AbstractHandler {
+abstract class PseudoHandler extends AbstractHandler {
     /**
      * Builds the code to be inserted directly in the event handling loop of the ManiaScript.
      * @return string The internal code.
