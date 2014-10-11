@@ -2,6 +2,7 @@
 
 namespace ManiaScript\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScript\Builder\Event\AbstractEvent;
 
 /**
@@ -12,10 +13,24 @@ use ManiaScript\Builder\Event\AbstractEvent;
  */
 class Factory {
     /**
+     * The builder instance.
+     * @var \ManiaScript\Builder
+     */
+    protected $builder;
+
+    /**
      * The already created event handler instances as associative array: class name => instance.
      * @var array
      */
     protected $instances = array();
+
+    /**
+     * Initializes the handler factory.
+     * @param \ManiaScript\Builder $builder The builder instance.
+     */
+    public function __construct(Builder $builder) {
+        $this->builder = $builder;
+    }
 
     /**
      * Returns the handler of the specified name.
@@ -25,7 +40,7 @@ class Factory {
     public function getHandler($name) {
         if (!isset($this->instances[$name])) {
             $handlerClass = __NAMESPACE__ . '\\' . $name;
-            $this->instances[$name] = new $handlerClass();
+            $this->instances[$name] = new $handlerClass($this->builder);
         }
         return $this->instances[$name];
     }

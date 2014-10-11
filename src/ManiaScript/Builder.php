@@ -41,12 +41,6 @@ class Builder {
     protected $globalCodes;
 
     /**
-     * Whether the timers are used.
-     * @var bool
-     */
-    protected $useTimers = false;
-
-    /**
      * The built code.
      * @var string
      */
@@ -57,7 +51,7 @@ class Builder {
      */
     public function __construct() {
         $this->options = new Options();
-        $this->eventHandlerFactory = new Factory();
+        $this->eventHandlerFactory = new Factory($this);
         $this->globalCodes = new PriorityQueue();
     }
 
@@ -116,8 +110,9 @@ class Builder {
      * @return string The code. Insert it into any other ManiaScript code.
      */
     public function getAddTimerCode($name, $delay, $replaceExisting = false) {
-        $this->useTimers = true;
-        return '__AddTimer("' . $name . '", ' . $delay . ', ' . ($replaceExisting ? 'True' : 'False') . ');';
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Timer */
+        $handler = $this->eventHandlerFactory->getHandler('Timer');
+        return $handler->getAddTimerCode($name, $delay, $replaceExisting);
     }
 
     /**
@@ -129,7 +124,6 @@ class Builder {
 
         $this->prepareHandlers()
              ->buildDirectives()
-             ->buildInternalCode()
              ->buildGlobalCode()
              ->buildMainFunction()
              ->compress()
@@ -152,7 +146,7 @@ class Builder {
     protected function prepareHandlers() {
         foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
             /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
-            $handler->buildCode();
+            $handler->prepare();
         }
         return $this;
     }
@@ -170,39 +164,6 @@ class Builder {
     }
 
     /**
-     * Builds the internal code of the ManiaScript builder.
-     * @return $this Implementing fluent interface.
-     */
-    protected function buildInternalCode() {
-        if ($this->useTimers) {
-            $this->code .= <<<EOT
-/** @var The list of timers waiting to be executed. */
-declare Text[Integer] __Timers;
-
-/**
- * Adds a new timer to the list of timers.
- * @param Name The name of the timer to add.
- * @param Delay The delay of the timer in milliseconds.
- * @param ReplacePrevious Whether to remove previously added timers with the same name.
- */
-Void __AddTimer(Text Name, Integer Delay, Boolean ReplacePrevious) {
-    if (ReplacePrevious) {
-        while (__Timers.exists(Name)) {
-            declare Temp = __Timers.remove(Name);
-        }
-    }
-    declare Integer Time = CurrentTime + Delay;
-    while (__Timers.existskey(Time)) {
-        Time = Time + 1; // Avoid collisions with timers triggering on the same millisecond
-    }
-    __Timers[Time] = Name;
-}
-EOT;
-        }
-        return $this;
-    }
-
-    /**
      * Builds the global code of the ManiaScript.
      * @return $this Implementing fluent interface.
      */
@@ -210,10 +171,6 @@ EOT;
         foreach ($this->globalCodes as $code) {
             /* @var $code \ManiaScript\Builder\Code */
             $this->code .= $code->getCode() . PHP_EOL;
-        }
-        foreach ($this->eventHandlerFactory->getAllHandlers() as $handler) {
-            /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
-            $this->code .= $handler->getGlobalCode();
         }
         return $this;
     }
@@ -223,7 +180,8 @@ EOT;
      * @return $this Implementing fluent interface.
      */
     protected function buildMainFunction() {
-        $this->code .= 'Void __Dummy() {}' . PHP_EOL
+        $functionPrefix = $this->options->getFunctionPrefix();
+        $this->code .= 'Void ' . $functionPrefix . '_Dummy() {}' . PHP_EOL
                      . 'main() {' . PHP_EOL
                      . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
                      . '    yield;' . PHP_EOL

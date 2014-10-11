@@ -22,6 +22,12 @@ class Options {
     protected $includeScriptTag = false;
 
     /**
+     * The prefix used on all functions created by the builder.
+     * @var string
+     */
+    protected $functionPrefix = 'MSB';
+
+    /**
      * Sets whether to compress the built ManiaScript.
      * @param boolean $compress The compress state.
      * @return $this Implementing fluent interface.
@@ -55,5 +61,23 @@ class Options {
      */
     public function getIncludeScriptTag() {
         return $this->includeScriptTag;
+    }
+
+    /**
+     * Sets the prefix used on all functions created by the builder.
+     * @param string $functionPrefix The function prefix
+     * @return $this Implementing fluent interface.
+     */
+    public function setFunctionPrefix($functionPrefix) {
+        $this->functionPrefix = $functionPrefix;
+        return $this;
+    }
+
+    /**
+     * Returns the prefix used on all functions created by the builder.
+     * @return string The function prefix.
+     */
+    public function getFunctionPrefix() {
+        return $this->functionPrefix;
     }
 }

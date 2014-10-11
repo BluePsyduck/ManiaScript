@@ -21,22 +21,31 @@ abstract class ControlHandler extends AbstractHandler {
     }
 
     /**
-     * Builds the code of the events.
-     * @return $this Implementing fluent interface.
+     * Builds the code to be inserted directly in the event handling loop of the ManiaScript.
+     * @return string The internal code.
      */
-    public function buildCode() {
-        $this->globalCode = '';
-        $this->inlineCode = '';
-
+    protected function buildInlineCode() {
+        $result = '';
         if (!$this->events->isEmpty()) {
-            $this->inlineCode .= '                case CMlEvent::Type::' . $this->getEventType() . ': {' . PHP_EOL;
+            $result .= '                case CMlEvent::Type::' . $this->getEventType() . ': {' . PHP_EOL;
             foreach ($this->events as $event) {
-                $this->globalCode .= $this->buildGlobalCodeOfEvent($event);
-                $this->inlineCode .= $this->buildInlineCodeOfEvent($event);
+                $result .= $this->buildInlineCodeOfEvent($event);
             }
-            $this->inlineCode .= '                }' . PHP_EOL;
+            $result .= '                }' . PHP_EOL;
         }
-        return $this;
+        return $result;
+    }
+
+    /**
+     * Builds the code to be inserted in the global scope of the ManiaScript.
+     * @return string The global code.
+     */
+    protected function buildGlobalCode() {
+        $result = '';
+        foreach ($this->events as $event) {
+            $result .= $this->buildGlobalCodeOfEvent($event);
+        }
+        return $result;
     }
 
     /**
@@ -55,7 +64,7 @@ abstract class ControlHandler extends AbstractHandler {
     /**
      * Builds the inline code of a concrete event.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
-     * @return $this Implementing fluent interface.
+     * @return string The inline code.
      */
     protected function buildInlineCodeOfEvent(AbstractEvent $event) {
         if ($event->getInline()) {
@@ -95,7 +104,7 @@ abstract class ControlHandler extends AbstractHandler {
     /**
      * Builds the handler function of the event.
      * @param \ManiaScript\Builder\Event\AbstractEvent $event The event.
-     * @return string THe handler function.
+     * @return string The handler function.
      */
     protected function buildHandlerFunction($event) {
         return 'Void ' . $this->getHandlerFunctionName($event) . '(CMlEvent Event) {' . PHP_EOL

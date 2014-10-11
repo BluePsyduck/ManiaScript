@@ -2,6 +2,8 @@
 
 namespace ManiaScript\Builder\Event\Handler;
 
+use ManiaScript\Builder;
+use ManiaScript\Builder\Code;
 use ManiaScript\Builder\PriorityQueue;
 use ManiaScript\Builder\Event\AbstractEvent;
 
@@ -12,6 +14,12 @@ use ManiaScript\Builder\Event\AbstractEvent;
  * @license http://opensource.org/licenses/GPL-2.0 GPL v2
  */
 abstract class AbstractHandler {
+    /**
+     * The builder instance.
+     * @var \ManiaScript\Builder
+     */
+    protected $builder;
+
     /**
      * The queue holding all the events of the handler.
      * @var \ManiaScript\Builder\PriorityQueue
@@ -38,8 +46,10 @@ abstract class AbstractHandler {
 
     /**
      * Initializes the event handler.
+     * @param \ManiaScript\Builder The builder instance.
      */
-    public function __construct() {
+    public function __construct(Builder $builder) {
+        $this->builder = $builder;
         $this->events = new PriorityQueue();
     }
 
@@ -54,17 +64,45 @@ abstract class AbstractHandler {
     }
 
     /**
-     * Builds the code of the events.
+     * Prepares the handlers, having the code built.
      * @return $this Implementing fluent interface.
      */
-    public abstract function buildCode();
+    public function prepare() {
+        $this->inlineCode = $this->buildInlineCode();
+        $this->addGlobalCode($this->buildGlobalCode());
+        return $this;
+    }
 
     /**
-     * Returns the code to be inserted in the global scope of the ManiaScript.
+     * Builds the code to be inserted directly in the event handling loop of the ManiaScript.
+     * @return string The internal code.
+     */
+    protected function buildInlineCode() {
+        return '';
+    }
+
+    /**
+     * Builds the code to be inserted in the global scope of the ManiaScript.
      * @return string The global code.
      */
-    public function getGlobalCode() {
-        return $this->globalCode;
+    protected function buildGlobalCode() {
+        return '';
+    }
+
+    /**
+     * Adds global code to the builder.
+     * @param string $globalCode The global code.
+     * @param int $priority The priority of the code. Defaults to PHP_INT_MAX to add the code to the end of the script.
+     * @return $this Implementing fluent interface.
+     */
+    protected function addGlobalCode($globalCode, $priority = PHP_INT_MAX) {
+        if (!empty($globalCode)) {
+            $code = new Code();
+            $code->setCode($globalCode)
+                 ->setPriority($priority);
+            $this->builder->addGlobalCode($code);
+        }
+        return $this;
     }
 
     /**
@@ -83,9 +121,10 @@ abstract class AbstractHandler {
     protected function getHandlerFunctionName(AbstractEvent $event) {
         $name = array_search($event, $this->handlerFunctionNames);
         if ($name === false) {
+            $functionPrefix = $this->builder->getOptions()->getFunctionPrefix();
             $parts = explode('\\', get_class($event));
             $class = end($parts);
-            $name = '__Handle' . $class . count($this->handlerFunctionNames);
+            $name = $functionPrefix . '_Handle' . $class . count($this->handlerFunctionNames);
             $this->handlerFunctionNames[$name] = $event;
         }
         return $name;

@@ -10,17 +10,15 @@ namespace ManiaScript\Builder\Event\Handler;
  */
 class Custom extends AbstractHandler {
     /**
-     * Builds the code of the events.
-     * @return $this Implementing fluent interface.
+     * Builds the code to be inserted in the global scope of the ManiaScript.
+     * @return string The global code.
      */
-    public function buildCode() {
-        $this->inlineCode = '';
-        $this->globalCode = '';
-
+    protected function buildGlobalCode() {
+        $result = '';
         foreach ($this->events as $event) {
-            $this->globalCode .= $this->buildCodeOfEvent($event);
+            $result .= $this->buildCodeOfEvent($event);
         }
-        return $this;
+        return $result;
     }
 
     /**
