@@ -151,34 +151,39 @@ class BuilderTest extends TestCase {
      */
     public function testGetTriggerCustomEventCode() {
         $name = 'abc';
-        $expectedResult = '+++abc+++';
-
+        $expectedResult = 'def';
         $builder = new Builder();
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Custom|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Custom')
+                        ->setMethods(array('getTriggerCustomEventCode'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
+        $handler->expects($this->once())
+                ->method('getTriggerCustomEventCode')
+                ->with($name)
+                ->will($this->returnValue($expectedResult));
+
+        /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
+        $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
+                        ->setMethods(array('getHandler'))
+                        ->setConstructorArgs(array($builder))
+                        ->getMock();
+        $factory->expects($this->once())
+                ->method('getHandler')
+                ->with('Custom')
+                ->will($this->returnValue($handler));
+
+        $this->injectProperty($builder, 'eventHandlerFactory', $factory);
         $result = $builder->getTriggerCustomEventCode($name);
         $this->assertEquals($expectedResult, $result);
     }
 
     /**
-     * Provides the data for the getAddTimerCode() test.
-     * @return array The data.
-     */
-    public function provideGetAddTimerCode() {
-        return array(
-            array('__AddTimer("abc", 1337, False);', 'abc', 1337, false),
-            array('__AddTimer("def", 42, True);', 'def', 42, true)
-        );
-    }
-
-    /**
      * Tests the getAddTimerCode() method.
-     * @param string $expectedResult The expected result.
-     * @param string $name The name to use.
-     * @param int $delay The delay to use.
-     * @param bool $replaceExisting The replace existing flag to use.
      * @covers \ManiaScript\Builder::getAddTimerCode
-     * @dataProvider provideGetAddTimerCode
      */
-    public function testGetAddTimerCode($expectedResult, $name, $delay, $replaceExisting) {
+    public function testGetAddTimerCode() {
         $name = 'abc';
         $delay = 1337;
         $replaceExisting = true;
@@ -395,10 +400,10 @@ class BuilderTest extends TestCase {
      */
     public function provideBuildEventLoop() {
         return array(
-            array(array('while(True)', 'yield;', 'abc', 'def'), array(), 'abc', 'def'),
-            array(array('while(True)', 'yield;', 'abc'), array(), 'abc', ''),
-            array(array('while(True)', 'yield;', 'def'), array(), '', 'def'),
-            array(array(), array('while(True)', 'yield;'), '', ''),
+            array(array('while(True)', 'yield;', 'abc', 'def', 'ghi', 'jkl'), array(), 'abc', 'def', 'ghi', 'jkl'),
+            array(array('while(True)', 'yield;', 'abc', 'ghi'), array(), 'abc', 'def', 'ghi', ''),
+            array(array('while(True)', 'yield;', 'jkl'), array(), '', '', '', 'jkl'),
+            array(array(), array('while(True)', 'yield;'), '', '', '' , ''),
         );
     }
 
@@ -406,13 +411,15 @@ class BuilderTest extends TestCase {
      * Tests the buildEventLoop() method.
      * @param array $expectedStrings The strings expected in the result.
      * @param array $notExpectedStrings The strings expected to be not in the result.
-     * @param string $resultLoopInline The result of the getInlineCode() method call of the Loop handler.
+     * @param string $resultLoop The result of the getInlineCode() method call of the Loop handler.
+     * @param string $resultCustom The result of the getInlineCode() method call of the Custom handler.
+     * @param string $resultTimer The result of the getInlineCode() method call of the Timer handler.
      * @param string $resultControlHandlerLoop The result of the buildControlHandlerLoop() method call.
      * @covers \ManiaScript\Builder::buildEventLoop
      * @dataProvider provideBuildEventLoop
      */
     public function testBuildEventLoop(
-        $expectedStrings, $notExpectedStrings, $resultLoopInline, $resultControlHandlerLoop
+        $expectedStrings, $notExpectedStrings, $resultLoop, $resultCustom, $resultTimer, $resultControlHandlerLoop
     ) {
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
         $builder = $this->getMockBuilder('ManiaScript\Builder')
@@ -422,28 +429,32 @@ class BuilderTest extends TestCase {
                 ->method('buildControlHandlerLoop')
                 ->will($this->returnValue($resultControlHandlerLoop));
 
-        /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
-                         ->setMethods(array('getInlineCode'))
-                         ->setConstructorArgs(array($builder))
-                         ->getMockForAbstractClass();
-        $handler->expects($this->any())
-                ->method('getInlineCode')
-                ->will($this->returnValue($resultLoopInline));
+        $handlers = array(
+            'Loop' => $resultLoop,
+            'Custom' => $resultCustom,
+            'Timer' => $resultTimer
+        );
+        $handlersMap = array();
+        foreach ($handlers as $name => $result) {
+            /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
+            $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                            ->setMethods(array('getInlineCode'))
+                            ->setConstructorArgs(array($builder))
+                            ->getMockForAbstractClass();
+            $handler->expects($this->once())
+                    ->method('getInlineCode')
+                    ->will($this->returnValue($result));
+            $handlersMap[] = array($name, $handler);
+        }
 
         /* @var $factory \ManiaScript\Builder\Event\Handler\Factory|\PHPUnit_Framework_MockObject_MockObject */
         $factory = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Factory')
                         ->setMethods(array('getHandler'))
                         ->setConstructorArgs(array($builder))
                         ->getMock();
-        $factory->expects($this->at(0))
+        $factory->expects($this->any())
                 ->method('getHandler')
-                ->with('Loop')
-                ->will($this->returnValue($handler));
-        $factory->expects($this->at(1))
-                ->method('getHandler')
-                ->with('Timer')
-                ->will($this->returnValue($handler));
+                ->will($this->returnValueMap($handlersMap));
 
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
 

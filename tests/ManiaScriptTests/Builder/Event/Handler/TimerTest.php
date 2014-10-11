@@ -5,6 +5,7 @@ namespace ManiaScriptTests\Builder\Event\Handler;
 use ManiaScript\Builder;
 use ManiaScript\Builder\Event\Handler\Timer;
 use ManiaScript\Builder\Event\Timer as TimerEvent;
+use ManiaScript\Builder\PriorityQueue;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
@@ -90,6 +91,10 @@ class TimerTest extends TestCase {
                ->setCode('jkl')
                ->setInline(false);
 
+        $queue = new PriorityQueue();
+        $queue->add($event1)
+              ->add($event2);
+
         $expectedInlineCode = <<<EOT
 foreach (Time => Name in pqr) {
     if (Time <= CurrentTime) {
@@ -120,7 +125,7 @@ EOT;
                 ->method('getTimersVariableName')
                 ->will($this->returnValue('pqr'));
 
-        $this->injectProperty($handler, 'events', array($event1, $event2));
+        $this->injectProperty($handler, 'events', $queue);
         $result = $this->invokeMethod($handler, 'buildInlineCode');
         $this->assertEquals($expectedInlineCode, $result);
     }

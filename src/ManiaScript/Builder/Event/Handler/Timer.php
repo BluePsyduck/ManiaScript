@@ -40,26 +40,30 @@ class Timer extends AbstractHandler {
      * @return string The internal code.
      */
     protected function buildInlineCode() {
-        $variableName = $this->getTimersVariableName();
-        $result = 'foreach (Time => Name in ' . $variableName . ') {' . PHP_EOL
-            . '    if (Time <= CurrentTime) {' . PHP_EOL
-            . '        switch (Name) {' . PHP_EOL;
+        $result = '';
+        if (!$this->events->isEmpty()) {
+            $variableName = $this->getTimersVariableName();
 
-        foreach ($this->events as $event) {
-            /* @var $event \ManiaScript\Builder\Event\Timer */
-            $result .= '            case "' . $event->getName() . '": {' . PHP_EOL;
-            if ($event->getInline()) {
-                $result .= $event->getCode() . PHP_EOL;
-            } else {
-                $result .= '                ' . $this->buildHandlerFunctionCall($event) . PHP_EOL;
+            $result = 'foreach (Time => Name in ' . $variableName . ') {' . PHP_EOL
+                . '    if (Time <= CurrentTime) {' . PHP_EOL
+                . '        switch (Name) {' . PHP_EOL;
+
+            foreach ($this->events as $event) {
+                /* @var $event \ManiaScript\Builder\Event\Timer */
+                $result .= '            case "' . $event->getName() . '": {' . PHP_EOL;
+                if ($event->getInline()) {
+                    $result .= $event->getCode() . PHP_EOL;
+                } else {
+                    $result .= '                ' . $this->buildHandlerFunctionCall($event) . PHP_EOL;
+                }
+                $result .= '            }' . PHP_EOL;
             }
-            $result .= '            }' . PHP_EOL;
-        }
 
-        $result .= '        }' . PHP_EOL
-            . '        declare Temp = ' . $variableName . '.removekey(Time);' . PHP_EOL
-            . '    }' . PHP_EOL
-            . '}' . PHP_EOL;
+            $result .= '        }' . PHP_EOL
+                . '        declare Temp = ' . $variableName . '.removekey(Time);' . PHP_EOL
+                . '    }' . PHP_EOL
+                . '}' . PHP_EOL;
+        }
         return $result;
     }
 

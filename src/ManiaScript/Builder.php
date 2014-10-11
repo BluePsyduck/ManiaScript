@@ -99,7 +99,10 @@ class Builder {
      * @return string The code. Insert it into any other ManiaScript code.
      */
     public function getTriggerCustomEventCode($name) {
-        return '+++' . $name . '+++';
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Custom */
+        $handler = $this->eventHandlerFactory->getHandler('Custom');
+        return $handler->getTriggerCustomEventCode($name);
+
     }
 
     /**
@@ -198,6 +201,7 @@ class Builder {
     protected function buildEventLoop() {
         $eventLoop = $this->eventHandlerFactory->getHandler('Loop')->getInlineCode()
             . $this->buildControlHandlerLoop()
+            . $this->eventHandlerFactory->getHandler('Custom')->getInlineCode()
             . $this->eventHandlerFactory->getHandler('Timer')->getInlineCode();
 
         $result = '';
