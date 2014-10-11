@@ -96,10 +96,9 @@ class LibraryTest extends TestCase {
      */
     public function testBuildCode($expected, $library, $alias) {
         /* @var $directive \ManiaScript\Builder\Directive\Library|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock(
-            'ManiaScript\Builder\Directive\Library',
-            array('getLibrary', 'getAlias')
-        );
+        $directive = $this->getMockBuilder('ManiaScript\Builder\Directive\Library')
+                          ->setMethods(array('getLibrary', 'getAlias'))
+                          ->getMock();
         $directive->expects($this->any())
                   ->method('getLibrary')
                   ->will($this->returnValue($library));

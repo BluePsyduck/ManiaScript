@@ -41,7 +41,9 @@ class ConstantTest extends TestCase {
      */
     public function testBuildCode() {
         /* @var $directive \ManiaScript\Builder\Directive\Constant|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Builder\Directive\Constant', array('getName', 'getValue'));
+        $directive = $this->getMockBuilder('ManiaScript\Builder\Directive\Constant')
+                          ->setMethods(array('getName', 'getValue'))
+                          ->getMock();
         $directive->expects($this->any())
                   ->method('getName')
                   ->will($this->returnValue('abc'));

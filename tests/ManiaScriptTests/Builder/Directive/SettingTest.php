@@ -41,11 +41,13 @@ class SettingTest extends TestCase {
      */
     public function testBuildCode() {
         /* @var $directive \ManiaScript\Builder\Directive\Setting|\PHPUnit_Framework_MockObject_MockObject */
-        $directive = $this->getMock('ManiaScript\Builder\Directive\Setting', array('getName', 'getValue'));
-        $directive->expects($this->any())
+        $directive = $this->getMockBuilder('ManiaScript\Builder\Directive\Setting')
+                          ->setMethods(array('getName', 'getValue'))
+                          ->getMock();
+        $directive->expects($this->once())
                   ->method('getName')
                   ->will($this->returnValue('abc'));
-        $directive->expects($this->any())
+        $directive->expects($this->once())
                   ->method('getValue')
                   ->will($this->returnValue('def'));
         $result = $directive->buildCode();

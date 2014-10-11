@@ -2,6 +2,7 @@
 
 namespace ManiaScriptTests\Builder\Event\Handler;
 
+use ManiaScript\Builder;
 use ManiaScriptTests\Assets\Event;
 use ManiaScriptTests\Assets\TestCase;
 
@@ -17,10 +18,15 @@ class AbstractHandlerTest extends TestCase {
      * @covers \ManiaScript\Builder\Event\Handler\AbstractHandler::__construct
      */
     public function testConstruct() {
+        $builder = new Builder();
+
         /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler|\PHPUnit_Framework_MockObject_MockObject */
-        $handler = $this->getMockForAbstractClass('ManiaScript\Builder\Event\Handler\AbstractHandler');
-        $result = $this->extractProperty($handler, 'events');
-        $this->assertInstanceOf('ManiaScript\Builder\PriorityQueue', $result);
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\AbstractHandler')
+                        ->setConstructorArgs(array($builder))
+                        ->getMockForAbstractClass();
+
+        $this->assertPropertyEquals($builder, $handler, 'builder');
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\PriorityQueue', $handler, 'events');
     }
 
     /**
@@ -41,6 +47,14 @@ class AbstractHandlerTest extends TestCase {
         $this->injectProperty($handler, 'events', $queue);
 
         $handler->addEvent($expected);
+    }
+
+    /**
+     * Tests the prepare() method.
+     * @covers Class::prepare
+     */
+    public function testPrepare() {
+        $this->markTestIncomplete('Test for prepare() not implemented.');
     }
 
     /**

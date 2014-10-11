@@ -24,7 +24,9 @@ class FacadeTest extends TestCase {
         $testCase = $this;
 
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMock('ManiaScript\Builder', array($calledMethod));
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array($calledMethod))
+                        ->getMock();
         $builder->expects($this->once())
                 ->method($calledMethod)
                 ->will($this->returnCallback(function($object) use ($testCase, $params) {
@@ -103,7 +105,9 @@ class FacadeTest extends TestCase {
         $options = new stdClass();
 
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMock('ManiaScript\Builder', array('getOptions'));
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('getOptions'))
+                        ->getMock();
         $builder->expects($this->once())
                 ->method('getOptions')
                 ->will($this->returnValue($options));
@@ -326,7 +330,9 @@ class FacadeTest extends TestCase {
         $expected = 'abc';
 
         /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMock('ManiaScript\Builder', array('build', 'getCode'));
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('build', 'getCode'))
+                        ->getMock();
         $builder->expects($this->once())
                 ->method('build')
                 ->will($this->returnSelf());

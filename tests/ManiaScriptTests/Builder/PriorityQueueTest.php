@@ -108,7 +108,9 @@ class PriorityQueueTest extends TestCase {
      */
     public function testRewind() {
         /* @var $queue \ManiaScript\Builder\PriorityQueue|\PHPUnit_Framework_MockObject_MockObject */
-        $queue = $this->getMock('ManiaScript\Builder\PriorityQueue', array('mergeItems'));
+        $queue = $this->getMockBuilder('ManiaScript\Builder\PriorityQueue')
+                      ->setMethods(array('mergeItems'))
+                      ->getMock();
         $this->injectProperty($queue, 'currentIndex', 42);
         $queue->expects($this->once())
               ->method('mergeItems');

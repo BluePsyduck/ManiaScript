@@ -3,6 +3,7 @@
 
 namespace ManiaScriptTests\Builder\Event;
 
+use ManiaScript\Builder\Event\KeyPress;
 use ManiaScriptTests\Assets\TestCase;
 
 /**
@@ -33,8 +34,7 @@ class KeyPressTest extends TestCase {
      * @dataProvider providerSetKeyCodes
      */
     public function testSetKeyCodes($expected, $keyCodes) {
-        /* @var $event \ManiaScript\Builder\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\KeyPress');
+        $event = new KeyPress();
         $result = $event->setKeyCodes($keyCodes);
         $this->assertPropertyEquals($expected, $event, 'keyCodes');
         $this->assertEquals($event, $result);
@@ -46,8 +46,7 @@ class KeyPressTest extends TestCase {
      */
     public function testGetKeyCodes() {
         $expected = array('abc');
-        /* @var $event \ManiaScript\Builder\Event\KeyPress|\PHPUnit_Framework_MockObject_MockObject */
-        $event = $this->getMockForAbstractClass('ManiaScript\Builder\Event\KeyPress');
+        $event = new KeyPress();
         $this->injectProperty($event, 'keyCodes', $expected);
         $this->assertEquals($expected, $event->getKeyCodes());
     }

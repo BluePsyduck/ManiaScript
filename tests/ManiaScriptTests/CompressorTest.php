@@ -42,7 +42,9 @@ class CompressorTest extends TestCase {
      */
     public function testCompress() {
         /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
-        $compressor = $this->getMock('ManiaScript\Compressor', array('read'));
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('read'))
+                           ->getMock();
         $compressor->expects($this->once())
                    ->method('read');
         $this->injectProperty($compressor, 'compressedCode', 'abc')
@@ -87,8 +89,10 @@ class CompressorTest extends TestCase {
      */
     public function testRead($expected, $code) {
         $methods = array('readSlash', 'readDirective', 'readString', 'readWhitespace');
-
-        $compressor = $this->getMock('ManiaScript\Compressor', $methods);
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods($methods)
+                           ->getMock();
         foreach ($methods as $method) {
             if ($method === $expected) {
                 $matcher = $this->once();
@@ -133,8 +137,10 @@ class CompressorTest extends TestCase {
      * @dataProvider provideReadSlash
      */
     public function testReadSlash($expected, $code, $currentPosition) {
-        $compressor = $this->getMock('ManiaScript\Compressor', array('skipUntil'));
-
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('skipUntil'))
+                           ->getMock();
         $this->injectProperty($compressor, 'code', $code)
              ->injectProperty($compressor, 'codeLength', strlen($code))
              ->injectProperty($compressor, 'currentPosition', $currentPosition);
@@ -156,7 +162,9 @@ class CompressorTest extends TestCase {
      * @covers \ManiaScript\Compressor::readDirective
      */
     public function testReadDirective() {
-        $compressor = $this->getMock('ManiaScript\Compressor', array('copyUntil'));
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('copyUntil'))
+                           ->getMock();
         $compressor->expects($this->once())
                    ->method('copyUntil')
                    ->with("\n");
@@ -219,7 +227,10 @@ class CompressorTest extends TestCase {
      * @dataProvider provideReadWhitespace
      */
     public function testReadWhitespace($expected, $compressedCode, $isWhitespaceRequired) {
-        $compressor = $this->getMock('ManiaScript\Compressor', array('isWhitespaceRequired', 'skipWhitespace'));
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('isWhitespaceRequired', 'skipWhitespace'))
+                           ->getMock();
         $compressor->expects($this->any())
                    ->method('isWhitespaceRequired')
                    ->will($this->returnValue($isWhitespaceRequired));
@@ -255,7 +266,10 @@ class CompressorTest extends TestCase {
      * @dataProvider provideCopyUntil
      */
     public function testCopyUntil($expected, $expectedPosition, $code, $currentPosition, $findString, $findResult) {
-        $compressor = $this->getMock('ManiaScript\Compressor', array('find'));
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('find'))
+                           ->getMock();
         $compressor->expects($this->any())
                    ->method('find')
                    ->with($findString)
@@ -288,7 +302,10 @@ class CompressorTest extends TestCase {
      * @dataProvider provideSkipUntil
      */
     public function testSkipUntil($expected, $find, $string) {
-        $compressor = $this->getMock('ManiaScript\Compressor', array('find'));
+        /* @var $compressor \ManiaScript\Compressor|\PHPUnit_Framework_MockObject_MockObject */
+        $compressor = $this->getMockBuilder('ManiaScript\Compressor')
+                           ->setMethods(array('find'))
+                           ->getMock();
         $compressor->expects($this->any())
                    ->method('find')
                    ->with($string)

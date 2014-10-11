@@ -28,6 +28,18 @@ class TestCase extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Asserts that a property is an object of the specified class.
+     * @param string $expected The class to be expected.
+     * @param object $object The object.
+     * @param string $name The name of the property.
+     * @return $this Implementing fluent interface.
+     */
+    public function assertPropertyInstanceOf($expected, $object, $name) {
+        $this->assertInstanceOf($expected, $this->extractProperty($object, $name));
+        return $this;
+    }
+
+    /**
      * Injects a property value to an object.
      * @param object $object The object.
      * @param string $name The name of the property.
