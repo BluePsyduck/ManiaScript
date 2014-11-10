@@ -28,6 +28,30 @@ class Options {
     protected $functionPrefix = 'MSB';
 
     /**
+     * Whether to render the #RequireContext directive.
+     * @var bool
+     */
+    protected $renderContextDirective = true;
+
+    /**
+     * Whether to render the directives of the script.
+     * @var bool
+     */
+    protected $renderDirectives = true;
+
+    /**
+     * Whether to render the global code, including all the handler functions.
+     * @var bool
+     */
+    protected $renderGlobalCode = true;
+
+    /**
+     * Whether to render the main() function.
+     * @var bool
+     */
+    protected $renderMainFunction = true;
+
+    /**
      * Sets whether to compress the built ManiaScript.
      * @param boolean $compress The compress state.
      * @return $this Implementing fluent interface.
@@ -79,5 +103,77 @@ class Options {
      */
     public function getFunctionPrefix() {
         return $this->functionPrefix;
+    }
+
+    /**
+     * Sets whether to render the #RequireContext directive.
+     * @param boolean $renderContextDirective The render flag.
+     * @return $this Implementing fluent interface.
+     */
+    public function setRenderContextDirective($renderContextDirective) {
+        $this->renderContextDirective = $renderContextDirective;
+        return $this;
+    }
+
+    /**
+     * Returns whether to render the #RequireContext directive.
+     * @return boolean The render flag.
+     */
+    public function getRenderContextDirective() {
+        return $this->renderContextDirective;
+    }
+
+    /**
+     * Sets whether to render the directives of the script.
+     * @param boolean $renderDirectives The render flag.
+     * @return $this Implementing fluent interface.
+     */
+    public function setRenderDirectives($renderDirectives) {
+        $this->renderDirectives = $renderDirectives;
+        return $this;
+    }
+
+    /**
+     * Returns whether to render the directives of the script.
+     * @return boolean The render flag.
+     */
+    public function getRenderDirectives() {
+        return $this->renderDirectives;
+    }
+
+    /**
+     * Sets whether to render the global code, including all the handler functions.
+     * @param boolean $renderGlobalCode The render flag.
+     * @return $this Implementing fluent interface.
+     */
+    public function setRenderGlobalCode($renderGlobalCode) {
+        $this->renderGlobalCode = $renderGlobalCode;
+        return $this;
+    }
+
+    /**
+     * Returns whether to render the global code, including all the handler functions.
+     * @return boolean The render flag.
+     */
+    public function getRenderGlobalCode() {
+        return $this->renderGlobalCode;
+    }
+
+    /**
+     * Sets whether to render the main() function.
+     * @param boolean $renderMainFunction The render flag.
+     * @return $this Implementing fluent interface.
+     */
+    public function setRenderMainFunction($renderMainFunction) {
+        $this->renderMainFunction = $renderMainFunction;
+        return $this;
+    }
+
+    /**
+     * Returns whether to render the main() function.
+     * @return boolean The render flag.
+     */
+    public function getRenderMainFunction() {
+        return $this->renderMainFunction;
     }
 }

@@ -123,14 +123,27 @@ class Builder {
      * @return $this Implementing fluent interface.
      */
     public function build() {
-        $this->code = '#RequireContext CMlBrowser' . PHP_EOL;
+        $this->code = '';
+        $this->prepareHandlers();
 
-        $this->prepareHandlers()
-             ->buildDirectives()
-             ->buildGlobalCode()
-             ->buildMainFunction()
-             ->compress()
-             ->addScriptTag();
+        if ($this->options->getRenderContextDirective()) {
+            $this->buildContextDirective();
+        }
+        if ($this->options->getRenderDirectives()) {
+            $this->buildDirectives();
+        }
+        if ($this->options->getRenderGlobalCode()) {
+            $this->buildGlobalCode();
+        }
+        if ($this->options->getRenderMainFunction()) {
+            $this->buildMainFunction();
+        }
+        if ($this->options->getCompress()) {
+            $this->compress();
+        }
+        if ($this->options->getIncludeScriptTag()) {
+            $this->addScriptTag();
+        }
         return $this;
     }
 
@@ -151,6 +164,15 @@ class Builder {
             /* @var $handler \ManiaScript\Builder\Event\Handler\AbstractHandler */
             $handler->prepare();
         }
+        return $this;
+    }
+
+    /**
+     * Builds the #RequireContext directive.
+     * @return $this Implementing fluent interface.
+     */
+    protected function buildContextDirective() {
+        $this->code .= '#RequireContext CMlBrowser' . PHP_EOL;
         return $this;
     }
 
@@ -245,27 +267,23 @@ class Builder {
     }
 
     /**
-     * Compresses the code if enabled in the options.
+     * Compresses the code.
      * @return $this Implementing fluent interface.
      */
     protected function compress() {
-        if ($this->options->getCompress()) {
-            $compressor = new Compressor();
-            $this->code = $compressor->setCode($this->code)
-                                     ->compress()
-                                     ->getCompressedCode();
-        }
+        $compressor = new Compressor();
+        $this->code = $compressor->setCode($this->code)
+                                 ->compress()
+                                 ->getCompressedCode();
         return $this;
     }
 
     /**
-     * Adds the script-tag to the code if enabled in the options.
+     * Adds the script-tag to the code.
      * @return $this Implementing fluent interface.
      */
     protected function addScriptTag() {
-        if ($this->options->getIncludeScriptTag()) {
-            $this->code = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $this->code) . ']]></script>';
-        }
+        $this->code = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $this->code) . ']]></script>';
         return $this;
     }
 }
