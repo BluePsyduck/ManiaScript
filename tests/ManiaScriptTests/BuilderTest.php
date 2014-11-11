@@ -216,10 +216,56 @@ class BuilderTest extends TestCase {
     }
 
     /**
-     * Provides the data for the build() test.
+     * Tests the build() method.
+     * @covers \ManiaScript\Builder::build
+     */
+    public function testBuild() {
+        $resultDirectives = 'abc';
+        $resultGlobalCode = 'def';
+        $resultMainFunction = 'ghi';
+
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('buildDirectives', 'buildGlobalCode', 'buildMainFunction'))
+                        ->getMock();
+        $builder->expects($this->once())
+                ->method('buildDirectives')
+                ->will($this->returnValue($resultDirectives));
+        $builder->expects($this->once())
+                ->method('buildGlobalCode')
+                ->will($this->returnValue($resultGlobalCode));
+        $builder->expects($this->once())
+                ->method('buildMainFunction')
+                ->will($this->returnValue($resultMainFunction));
+
+        $result = $builder->build();
+        $this->assertEquals($builder, $result);
+        $this->assertPropertyInstanceOf('ManiaScript\Builder\RenderedCode', $result, 'renderedCode');
+
+        /* @var $renderedCode \ManiaScript\Builder\RenderedCode */
+        $renderedCode = $this->extractProperty($result, 'renderedCode');
+        $this->assertEquals($resultDirectives, $renderedCode->getDirectives());
+        $this->assertEquals($resultGlobalCode, $renderedCode->getGlobalCode());
+        $this->assertEquals($resultMainFunction, $renderedCode->getMainFunction());
+    }
+
+
+    /**
+     * Provides the data for the getCode() test.
      * @return array The data.
      */
-    public function provideBuild() {
+    public function provideGetCode() {
+        /* @var $renderedCode \ManiaScript\Builder\RenderedCode|\PHPUnit_Framework_MockObject_MockObject */
+        $renderedCode = $this->getMockBuilder('ManiaScript\Builder\RenderedCode')
+                             ->setMethods(array('getContextDirective'))
+                             ->getMock();
+        $renderedCode->expects($this->any())
+                     ->method('getContextDirective')
+                     ->will($this->returnValue('abc'));
+        $renderedCode->setDirectives('def')
+                     ->setGlobalCode('ghi')
+                     ->setMainFunction('jkl');
+
         $options = new Options();
         $options->setRenderContextDirective(false)
                 ->setRenderDirectives(false)
@@ -241,10 +287,12 @@ class BuilderTest extends TestCase {
         $optionsMainFunction->setRenderMainFunction(true);
 
         $optionsCompress = clone($options);
-        $optionsCompress->setCompress(true);
+        $optionsCompress->setRenderContextDirective(true)
+                        ->setCompress(true);
 
         $optionsScriptTag = clone($options);
-        $optionsScriptTag->setIncludeScriptTag(true);
+        $optionsScriptTag->setRenderContextDirective(true)
+                         ->setIncludeScriptTag(true);
 
         $optionsAll = clone($options);
         $optionsAll->setRenderContextDirective(true)
@@ -255,60 +303,52 @@ class BuilderTest extends TestCase {
                    ->setIncludeScriptTag(true);
 
         return array(
-            array(array('prepareHandlers'), $options),
-            array(array('prepareHandlers', 'buildContextDirective'), $optionsContext),
-            array(array('prepareHandlers', 'buildDirectives'), $optionsDirectives),
-            array(array('prepareHandlers', 'buildGlobalCode'), $optionsGlobalCode),
-            array(array('prepareHandlers', 'buildMainFunction'), $optionsMainFunction),
-            array(array('prepareHandlers', 'compress'), $optionsCompress),
-            array(array('prepareHandlers', 'addScriptTag'), $optionsScriptTag),
-            array(
-                array(
-                    'prepareHandlers', 'buildContextDirective', 'buildDirectives', 'buildGlobalCode',
-                    'buildMainFunction', 'compress', 'addScriptTag'
-                ),
-                $optionsAll
-            )
+            array('', $options, $renderedCode, null, null, null, null),
+
+            array('abc', $optionsContext, $renderedCode, null, null, null, null),
+            array('def', $optionsDirectives, $renderedCode, null, null, null, null),
+            array('ghi', $optionsGlobalCode, $renderedCode, null, null, null, null),
+            array('jkl', $optionsMainFunction, $renderedCode, null, null, null, null),
+
+            array('foo', $optionsCompress, $renderedCode, 'abc', 'foo', null, null),
+            array('bar', $optionsScriptTag, $renderedCode, null, null, 'abc', 'bar'),
+
+            array('bar', $optionsAll, $renderedCode, 'abcdefghijkl', 'foo', 'foo', 'bar'),
         );
-    }
-
-    /**
-     * Tests the build() method.
-     * @param array $expectedMethods The methods expected to be called.
-     * @param $options
-     * @covers \ManiaScript\Builder::build
-     * @dataProvider provideBuild
-     */
-    public function testBuild($expectedMethods, $options) {
-        $allMethods = array(
-            'prepareHandlers', 'buildContextDirective', 'buildDirectives', 'buildGlobalCode', 'buildMainFunction',
-            'compress', 'addScriptTag'
-        );
-
-        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
-        $builder = $this->getMockBuilder('ManiaScript\Builder')
-                        ->setMethods($allMethods)
-                        ->getMock();
-        foreach ($allMethods as $method) {
-            $builder->expects(in_array($method, $expectedMethods) ? $this->once() : $this->never())
-                    ->method($method)
-                    ->will($this->returnSelf());
-        }
-        $this->injectProperty($builder, 'options', $options);
-
-        $result = $builder->build();
-        $this->assertEquals($builder, $result);
     }
 
     /**
      * Tests the getCode() method.
+     * @param string $expectedResult The expected result.
+     * @param \ManiaScript\Builder\Options $options The options to set.
+     * @param \ManiaScript\Builder\RenderedCode $renderedCode The rendered code to set.
+     * @param string|null $expectCompress The parameter expected in the compress() call, or null if not called.
+     * @param string|null $resultCompress The result of the compress() call.
+     * @param string|null $expectScriptTag The parameter expected in the addScriptTag() call, or null if not called.
+     * @param string|null $resultScriptTag The result of the addScriptTag() call.
      * @covers \ManiaScript\Builder::getCode
+     * @dataProvider provideGetCode
      */
-    public function testGetCode() {
-        $expected = 'abc';
-        $builder = new Builder();
-        $this->injectProperty($builder, 'code', $expected);
-        $this->assertEquals($expected, $builder->getCode());
+    public function testGetCode(
+        $expectedResult, $options, $renderedCode, $expectCompress, $resultCompress, $expectScriptTag, $resultScriptTag
+    ) {
+        /* @var $builder \ManiaScript\Builder|\PHPUnit_Framework_MockObject_MockObject */
+        $builder = $this->getMockBuilder('ManiaScript\Builder')
+                        ->setMethods(array('compress', 'addScriptTag'))
+                        ->getMock();
+        $builder->expects(is_null($expectCompress) ? $this->never() : $this->once())
+                ->method('compress')
+                ->with($expectCompress)
+                ->will($this->returnValue($resultCompress));
+        $builder->expects(is_null($expectScriptTag) ? $this->never() : $this->once())
+                ->method('addScriptTag')
+                ->with($expectScriptTag)
+                ->will($this->returnValue($resultScriptTag));
+        $this->injectProperty($builder, 'options', $options)
+             ->injectProperty($builder, 'renderedCode', $renderedCode);
+
+        $result = $builder->getCode();
+        $this->assertEquals($expectedResult, $result);
     }
 
     /**
@@ -351,19 +391,6 @@ class BuilderTest extends TestCase {
     }
 
     /**
-     * Tests the buildContextDirective() method.
-     * @covers \ManiaScript\Builder::buildContextDirective
-     */
-    public function testBuildContextDirective() {
-        $builder = new Builder();
-        $result = $this->invokeMethod($builder, 'buildContextDirective');
-        $this->assertEquals($builder, $result);
-
-        $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('#RequireContext CMlBrowser', $code);
-    }
-
-    /**
      * Tests the buildDirectives() method.
      * @covers \ManiaScript\Builder::buildDirectives
      */
@@ -384,11 +411,8 @@ class BuilderTest extends TestCase {
         $this->injectProperty($builder, 'directives', array($directive1, $directive2));
 
         $result = $this->invokeMethod($builder, 'buildDirectives');
-        $this->assertEquals($builder, $result);
-
-        $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('abc', $code);
-        $this->assertContains('def', $code);
+        $this->assertContains('abc', $result);
+        $this->assertContains('def', $result);
     }
 
     /**
@@ -412,11 +436,8 @@ class BuilderTest extends TestCase {
         $this->injectProperty($builder, 'globalCodes', array($code1, $code2));
 
         $result = $this->invokeMethod($builder, 'buildGlobalCode');
-        $this->assertEquals($builder, $result);
-
-        $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('abc', $code);
-        $this->assertContains('def', $code);
+        $this->assertContains('abc', $result);
+        $this->assertContains('def', $result);
     }
 
 
@@ -465,13 +486,12 @@ class BuilderTest extends TestCase {
                 )));
 
         $this->injectProperty($builder, 'eventHandlerFactory', $factory);
-        $this->invokeMethod($builder, 'buildMainFunction');
-        $code = $this->extractProperty($builder, 'code');
-        $this->assertContains('Void foo_Dummy() {}', $code);
-        $this->assertContains('main() {', $code);
-        $this->assertContains('abc', $code);
-        $this->assertContains('def', $code);
-        $this->assertContains('ghi', $code);
+        $result = $this->invokeMethod($builder, 'buildMainFunction');
+        $this->assertContains('Void foo_Dummy() {}', $result);
+        $this->assertContains('main() {', $result);
+        $this->assertContains('abc', $result);
+        $this->assertContains('def', $result);
+        $this->assertContains('ghi', $result);
     }
 
     /**
@@ -631,11 +651,10 @@ class BuilderTest extends TestCase {
     public function testCompress() {
         $code = ' abc ';
         $expectedResult = 'abc';
+
         $builder = new Builder();
-        $this->injectProperty($builder, 'code', $code);
-        $result = $this->invokeMethod($builder, 'compress');
-        $this->assertEquals($builder, $result);
-        $this->assertPropertyEquals($expectedResult, $builder, 'code');
+        $result = $this->invokeMethod($builder, 'compress', array($code));
+        $this->assertEquals($expectedResult, $result);
     }
 
     /**
@@ -651,17 +670,14 @@ class BuilderTest extends TestCase {
 
     /**
      * Tests the addScriptTag() method.
-     * @param string $expected The expected code.
+     * @param string $expectedResult The expected result.
      * @param string $code The code to be set.
      * @covers \ManiaScript\Builder::addScriptTag
      * @dataProvider provideAddScriptTag
      */
-    public function testAddScriptTag($expected, $code) {
+    public function testAddScriptTag($expectedResult, $code) {
         $builder = new Builder();
-        $this->injectProperty($builder, 'code', $code);
-
-        $result = $this->invokeMethod($builder, 'addScriptTag');
-        $this->assertPropertyEquals($expected, $builder, 'code');
-        $this->assertEquals($builder, $result);
+        $result = $this->invokeMethod($builder, 'addScriptTag', array($code));
+        $this->assertEquals($expectedResult, $result);
     }
 }

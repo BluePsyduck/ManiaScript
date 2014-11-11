@@ -8,6 +8,7 @@ use ManiaScript\Builder\Event\AbstractEvent;
 use ManiaScript\Builder\Options;
 use ManiaScript\Builder\Directive\AbstractDirective;
 use ManiaScript\Builder\Event\Handler\Factory;
+use ManiaScript\Builder\RenderedCode;
 
 /**
  * The main Builder class for ManiaScript.
@@ -41,10 +42,10 @@ class Builder {
     protected $globalCodes;
 
     /**
-     * The built code.
-     * @var string
+     * The rendered script instance.
+     * @var \ManiaScript\Builder\RenderedCode
      */
-    protected $code = '';
+    protected $renderedCode;
 
     /**
      * Initializes the builder instance.
@@ -53,6 +54,7 @@ class Builder {
         $this->options = new Options();
         $this->eventHandlerFactory = new Factory($this);
         $this->globalCodes = new PriorityQueue();
+        $this->renderedCode = new RenderedCode();
     }
 
     /**
@@ -123,36 +125,42 @@ class Builder {
      * @return $this Implementing fluent interface.
      */
     public function build() {
-        $this->code = '';
         $this->prepareHandlers();
-
-        if ($this->options->getRenderContextDirective()) {
-            $this->buildContextDirective();
-        }
-        if ($this->options->getRenderDirectives()) {
-            $this->buildDirectives();
-        }
-        if ($this->options->getRenderGlobalCode()) {
-            $this->buildGlobalCode();
-        }
-        if ($this->options->getRenderMainFunction()) {
-            $this->buildMainFunction();
-        }
-        if ($this->options->getCompress()) {
-            $this->compress();
-        }
-        if ($this->options->getIncludeScriptTag()) {
-            $this->addScriptTag();
-        }
+        $this->renderedCode = new RenderedCode();
+        $this->renderedCode->setDirectives($this->buildDirectives())
+                           ->setGlobalCode($this->buildGlobalCode())
+                           ->setMainFunction($this->buildMainFunction());
         return $this;
     }
 
     /**
-     * Returns the ManiaScript code.
+     * Returns the rendered ManiaScript code.
      * @return string The code.
      */
     public function getCode() {
-        return $this->code;
+        $result = '';
+
+        if ($this->options->getRenderContextDirective()) {
+            $result .= $this->renderedCode->getContextDirective();
+        }
+        if ($this->options->getRenderDirectives()) {
+            $result .= $this->renderedCode->getDirectives();
+        }
+        if ($this->options->getRenderGlobalCode()) {
+            $result .= $this->renderedCode->getGlobalCode();
+        }
+        if ($this->options->getRenderMainFunction()) {
+            $result .= $this->renderedCode->getMainFunction();
+        }
+
+        if ($this->options->getCompress()) {
+            $result = $this->compress($result);
+        }
+        if ($this->options->getIncludeScriptTag()) {
+            $result = $this->addScriptTag($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -168,24 +176,16 @@ class Builder {
     }
 
     /**
-     * Builds the #RequireContext directive.
-     * @return $this Implementing fluent interface.
-     */
-    protected function buildContextDirective() {
-        $this->code .= '#RequireContext CMlBrowser' . PHP_EOL;
-        return $this;
-    }
-
-    /**
      * Builds the directives.
      * @return $this Implementing fluent interface.
      */
     protected function buildDirectives() {
+        $result = '';
         foreach ($this->directives as $directive) {
             /* @var $directive \ManiaScript\Builder\Directive\AbstractDirective */
-            $this->code .= $directive->buildCode();
+            $result .= $directive->buildCode();
         }
-        return $this;
+        return $result;
     }
 
     /**
@@ -193,11 +193,12 @@ class Builder {
      * @return $this Implementing fluent interface.
      */
     protected function buildGlobalCode() {
+        $result = '';
         foreach ($this->globalCodes as $code) {
             /* @var $code \ManiaScript\Builder\Code */
-            $this->code .= $code->getCode() . PHP_EOL;
+            $result .= $code->getCode() . PHP_EOL;
         }
-        return $this;
+        return $result;
     }
 
     /**
@@ -206,14 +207,14 @@ class Builder {
      */
     protected function buildMainFunction() {
         $functionPrefix = $this->options->getFunctionPrefix();
-        $this->code .= 'Void ' . $functionPrefix . '_Dummy() {}' . PHP_EOL
-                     . 'main() {' . PHP_EOL
-                     . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
-                     . '    yield;' . PHP_EOL
-                     . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
-                     . $this->buildEventLoop()
-                     . '}' . PHP_EOL;
-        return $this;
+        $result = 'Void ' . $functionPrefix . '_Dummy() {}' . PHP_EOL
+                . 'main() {' . PHP_EOL
+                . $this->eventHandlerFactory->getHandler('Load')->getInlineCode()
+                . '    yield;' . PHP_EOL
+                . $this->eventHandlerFactory->getHandler('FirstLoop')->getInlineCode()
+                . $this->buildEventLoop()
+                . '}' . PHP_EOL;
+        return $result;
     }
 
     /**
@@ -268,22 +269,24 @@ class Builder {
 
     /**
      * Compresses the code.
-     * @return $this Implementing fluent interface.
+     * @param string $code The code to compress.
+     * @return string The compressed code.
      */
-    protected function compress() {
+    protected function compress($code) {
         $compressor = new Compressor();
-        $this->code = $compressor->setCode($this->code)
-                                 ->compress()
-                                 ->getCompressedCode();
-        return $this;
+        $result = $compressor->setCode($code)
+                             ->compress()
+                             ->getCompressedCode();
+        return $result;
     }
 
     /**
-     * Adds the script-tag to the code.
-     * @return $this Implementing fluent interface.
+     * Adds the script tag to the code.
+     * @param string $code The code to include in the script tag.
+     * @return string The code with the script tag.
      */
-    protected function addScriptTag() {
-        $this->code = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $this->code) . ']]></script>';
-        return $this;
+    protected function addScriptTag($code) {
+        $result = '<script><![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $code) . ']]></script>';
+        return $result;
     }
 }
