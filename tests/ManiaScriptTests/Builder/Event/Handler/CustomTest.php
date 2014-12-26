@@ -69,6 +69,52 @@ class CustomTest extends TestCase {
      * @covers \ManiaScript\Builder\Event\Handler\Custom::buildInlineCode
      */
     public function testBuildInlineCode() {
+        $mergedEvents = array(
+            'abc' => 'def' . PHP_EOL,
+            'ghi' => 'jkl' . PHP_EOL
+        );
+
+        $queue = new PriorityQueue();
+        $queue->add(new CustomEvent());
+
+        $expectedInlineCode = <<<EOT
+while (foo.count > 0) {
+    switch (foo[0]) {
+        case "abc": {
+def
+        }
+        case "ghi": {
+jkl
+        }
+    }
+    declare Temp = foo.removekey(0);
+}
+
+EOT;
+
+        /* @var $handler \ManiaScript\Builder\Event\Handler\Custom|\PHPUnit_Framework_MockObject_MockObject */
+        $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Custom')
+                        ->setMethods(array('mergeEvents', 'getTriggeredCustomEventsVariableName'))
+                        ->setConstructorArgs(array(new Builder()))
+                        ->getMock();
+        $handler->expects($this->once())
+                ->method('mergeEvents')
+                ->with($queue)
+                ->will($this->returnValue($mergedEvents));
+        $handler->expects($this->once())
+                ->method('getTriggeredCustomEventsVariableName')
+                ->will($this->returnValue('foo'));
+
+        $this->injectProperty($handler, 'events', $queue);
+        $result = $this->invokeMethod($handler, 'buildInlineCode');
+        $this->assertEquals($expectedInlineCode, $result);
+    }
+
+    /**
+     * Tests the mergeEvents() method.
+     * @covers \ManiaScript\Builder\Event\Handler\Custom::mergeEvents
+     */
+    public function testMergeEvents() {
         $event1 = new CustomEvent();
         $event1->setName('abc')
                ->setCode('def')
@@ -76,43 +122,34 @@ class CustomTest extends TestCase {
         $event2 = new CustomEvent();
         $event2->setName('ghi')
                ->setCode('jkl')
+               ->setInline(true);
+        $event3 = new CustomEvent();
+        $event3->setName('abc')
+               ->setCode('mno')
                ->setInline(false);
+
+        $expectedResult = array(
+            'abc' => 'def' . PHP_EOL . 'pqr' . PHP_EOL,
+            'ghi' => 'jkl' . PHP_EOL
+        );
 
         $queue = new PriorityQueue();
         $queue->add($event1)
-              ->add($event2);
-
-        $expectedInlineCode = <<<EOT
-while (pqr.count > 0) {
-    switch (pqr[0]) {
-        case "abc": {
-def
-        }
-        case "ghi": {
-            mno
-        }
-    }
-    declare Temp = pqr.removekey(0);
-}
-
-EOT;
+              ->add($event2)
+              ->add($event3);
 
         /* @var $handler \ManiaScript\Builder\Event\Handler\Custom|\PHPUnit_Framework_MockObject_MockObject */
         $handler = $this->getMockBuilder('ManiaScript\Builder\Event\Handler\Custom')
-                        ->setMethods(array('buildHandlerFunctionCall', 'getTriggeredCustomEventsVariableName'))
+                        ->setMethods(array('buildHandlerFunctionCall'))
                         ->setConstructorArgs(array(new Builder()))
                         ->getMock();
         $handler->expects($this->once())
                 ->method('buildHandlerFunctionCall')
-                ->with($event2)
-                ->will($this->returnValue('mno'));
-        $handler->expects($this->once())
-                ->method('getTriggeredCustomEventsVariableName')
+                ->with($event3)
                 ->will($this->returnValue('pqr'));
 
-        $this->injectProperty($handler, 'events', $queue);
-        $result = $this->invokeMethod($handler, 'buildInlineCode');
-        $this->assertEquals($expectedInlineCode, $result);
+        $result = $this->invokeMethod($handler, 'mergeEvents', array($queue));
+        $this->assertEquals($expectedResult, $result);
     }
 
     /**

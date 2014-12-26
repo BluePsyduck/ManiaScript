@@ -39,20 +39,37 @@ class Custom extends AbstractHandler {
             $result = 'while (' . $variableName . '.count > 0) {' . PHP_EOL
                 . '    switch (' . $variableName . '[0]) {' . PHP_EOL;
 
-            foreach ($this->events as $event) {
-                /* @var $event \ManiaScript\Builder\Event\Custom */
-                $result .= '        case "' . $event->getName() . '": {' . PHP_EOL;
-                if ($event->getInline()) {
-                    $result .= $event->getCode() . PHP_EOL;
-                } else {
-                    $result .= '            ' . $this->buildHandlerFunctionCall($event) . PHP_EOL;
-                }
-                $result .= '        }' . PHP_EOL;
+            foreach ($this->mergeEvents($this->events) as $name => $code) {
+                $result .= '        case "' . $name . '": {' . PHP_EOL
+                    . $code
+                    . '        }' . PHP_EOL;
             }
 
             $result .= '    }' . PHP_EOL
                 . '    declare Temp = ' . $variableName . '.removekey(0);' . PHP_EOL
                 . '}' . PHP_EOL;
+        }
+        return $result;
+    }
+
+    /**
+     * Merges the handling codes of events with the same name.
+     * @param \Traversable|array $events The events to merge.
+     * @return array The merged events.
+     */
+    protected function mergeEvents($events) {
+        $result = array();
+        foreach ($events as $event) {
+            /* @var $event \ManiaScript\Builder\Event\Custom */
+            if ($event->getInline()) {
+                $code = $event->getCode() . PHP_EOL;
+            } else {
+                $code = $this->buildHandlerFunctionCall($event) . PHP_EOL;
+            }
+            if (!isset($result[$event->getName()])) {
+                 $result[$event->getName()] = '';
+            }
+            $result[$event->getName()] .= $code;
         }
         return $result;
     }
